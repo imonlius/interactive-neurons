@@ -87,3 +87,24 @@ if(NOT catch2_POPULATED)
 endif()
 
 # Add more CMake libraries here ...
+
+# Adds cereal library. This is a header only library required for flashlight.
+FetchContent_Declare(
+        cereal
+        GIT_REPOSITORY https://github.com/USCiLab/cereal.git
+        GIT_TAG        origin/develop
+)
+
+# Adds cereal library. This is a header only library.
+FetchContent_GetProperties(cereal)
+if(NOT cereal_POPULATED)
+    FetchContent_Populate(cereal)
+    add_library(cereal INTERFACE)
+    target_include_directories(cereal INTERFACE ${cereal_SOURCE_DIR}/include)
+endif()
+
+# Adds flashlight library. This must be installed on the system.
+find_package(ArrayFire REQUIRED)
+find_package(flashlight REQUIRED)
+
+target_link_libraries(cinder-myapp -lflashlight)
