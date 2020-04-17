@@ -13,7 +13,7 @@ ci_make_app(
         CINDER_PATH ${CINDER_PATH}
         SOURCES     ${SOURCE_LIST}
         LIBRARIES   mylibrary catch2
-        BLOCKS  Cinder-ImGui
+        BLOCKS
 )
 
 target_compile_features(test PRIVATE cxx_std_14)
