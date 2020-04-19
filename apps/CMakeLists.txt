@@ -7,12 +7,11 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
         "${FinalProject_SOURCE_DIR}/apps/*.cc"
         "${FinalProject_SOURCE_DIR}/apps/*.cpp")
 
-
 ci_make_app(
     APP_NAME    cinder-myapp
     CINDER_PATH ${CINDER_PATH}
     SOURCES     ${SOURCE_LIST}
-    LIBRARIES   mylibrary
+    LIBRARIES   mylibrary imgui-node-editor
     BLOCKS
 )
 

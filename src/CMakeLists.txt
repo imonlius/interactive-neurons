@@ -19,7 +19,7 @@ ci_make_library(
         CINDER_PATH  ${CINDER_PATH}
         SOURCES      ${SOURCE_LIST}
         INCLUDES     "${FinalProject_SOURCE_DIR}/include"
-        LIBRARIES   cereal
+        LIBRARIES    cereal mkldnn af flashlight
         BLOCKS
 )
 

@@ -88,6 +88,26 @@ endif()
 
 # Add more CMake libraries here ...
 
+# Add imgui-node-editor library.
+FetchContent_Declare(
+        imgui-node-editor
+        GIT_REPOSITORY https://github.com/thedmd/imgui-node-editor.git
+        GIT_TAG origin/master
+)
+
+FetchContent_GetProperties(imgui-node-editor)
+if(NOT imgui-node-editor_POPULATED)
+    FetchContent_Populate(imgui-node-editor)
+    # Make a list of source files and define that to be ${SOURCE_LIST}.
+    file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
+            "${imgui-node-editor_SOURCE_DIR}/NodeEditor/**/*.h"
+            "${imgui-node-editor_SOURCE_DIR}/NodeEditor/**/*.cpp"
+            "${imgui-node-editor_SOURCE_DIR}/NodeEditor/**/*.inl"
+            )
+    add_library(imgui-node-editor ${SOURCE_LIST})
+    target_include_directories(imgui-node-editor PUBLIC ${imgui-node-editor_SOURCE_DIR})
+endif()
+
 # Adds cereal library. This is a header only library required for flashlight.
 FetchContent_Declare(
         cereal
@@ -106,5 +126,6 @@ endif()
 # Adds flashlight library. This must be installed on the system.
 find_package(ArrayFire REQUIRED)
 find_package(flashlight REQUIRED)
+find_package(mkldnn REQUIRED)
 
-target_link_libraries(cinder-myapp -lflashlight)
+target_link_libraries(cinder-myapp mkldnn ArrayFire::af flashlight::flashlight)
