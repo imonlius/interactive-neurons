@@ -1,0 +1,38 @@
+// Copyright (c) 2020 Simon Liu. All rights reserved.
+
+#include <catch2/catch.hpp>
+#include <neurons/link.h>
+#include <neurons/node.h>
+
+/*
+ * static bool CanLink(const Node& input, const Node& output);
+ */
+
+TEST_CASE("Link: CanLink", "[Link][CanLink]") {
+  // For now, all Nodes are allowed to link
+  SECTION("Always Yes") {
+    auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
+    auto node = neurons::Node(1, neurons::NodeType::Conv2D, std::move(module));
+    REQUIRE(neurons::Link::CanLink(node, node));
+  }
+}
+
+/*
+ * static Link BuildLink(size_t id, Node& input, Node& output);
+ */
+
+TEST_CASE("Link: BuildLink", "[Link][BuildLink]") {
+  SECTION("Always Yes") {
+    auto input_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
+    auto input_node = neurons::Node(1, neurons::NodeType::Conv2D, std::move(input_module));
+    auto output_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
+    auto output_node = neurons::Node(1, neurons::NodeType::Conv2D, std::move(output_module));
+    REQUIRE(neurons::Link::CanLink(input_node, output_node));
+
+    auto link = neurons::Link::BuildLink(3, input_node, output_node);
+    REQUIRE(link.GetId() == 3);
+    REQUIRE(link.input_ == &input_node);
+    REQUIRE(link.output_ == &output_node);
+  }
+}
+
