@@ -7,7 +7,6 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
         "${FinalProject_SOURCE_DIR}/tests/*.cc"
         "${FinalProject_SOURCE_DIR}/tests/*.cpp")
 
-
 ci_make_app(
         APP_NAME    test
         CINDER_PATH ${CINDER_PATH}
