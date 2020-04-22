@@ -18,7 +18,8 @@ TEST_CASE("Network: Add Nodes", "[Network][AddNode]") {
 
     REQUIRE(network.GetNodes().size() == 1);
     REQUIRE(network.GetNodes().at(0).GetId() == 0);
-    REQUIRE(network.GetNodes().at(0).GetNodeType() == neurons::NodeType::Conv2D);
+    REQUIRE(network.GetNodes().at(0).GetNodeType() ==
+            neurons::NodeType::Conv2D);
   }
 
   SECTION("Add one Linear node") {
@@ -27,7 +28,8 @@ TEST_CASE("Network: Add Nodes", "[Network][AddNode]") {
 
     REQUIRE(network.GetNodes().size() == 1);
     REQUIRE(network.GetNodes().at(0).GetId() == 0);
-    REQUIRE(network.GetNodes().at(0).GetNodeType() == neurons::NodeType::Linear);
+    REQUIRE(network.GetNodes().at(0).GetNodeType() ==
+            neurons::NodeType::Linear);
   }
 
   SECTION("Add two nodes") {
@@ -40,10 +42,12 @@ TEST_CASE("Network: Add Nodes", "[Network][AddNode]") {
     REQUIRE(network.GetNodes().size() == 2);
 
     REQUIRE(network.GetNodes().at(0).GetId() == 0);
-    REQUIRE(network.GetNodes().at(0).GetNodeType() == neurons::NodeType::Conv2D);
+    REQUIRE(network.GetNodes().at(0).GetNodeType() ==
+            neurons::NodeType::Conv2D);
 
     REQUIRE(network.GetNodes().at(1).GetId() == 1);
-    REQUIRE(network.GetNodes().at(1).GetNodeType() == neurons::NodeType::Linear);
+    REQUIRE(network.GetNodes().at(1).GetNodeType() ==
+            neurons::NodeType::Linear);
   }
 }
 
@@ -75,7 +79,8 @@ TEST_CASE("Network: Delete Nodes", "[Network][DeleteNode]") {
     REQUIRE(network.GetNodes().size() == 1);
 
     // check remaining node is correct
-    REQUIRE(network.GetNodes().at(0).GetNodeType() == neurons::NodeType::Linear);
+    REQUIRE(network.GetNodes().at(0).GetNodeType() ==
+            neurons::NodeType::Linear);
   }
 
   SECTION("Delete a node not in the network") {
@@ -96,7 +101,8 @@ TEST_CASE("Network: Delete Nodes", "[Network][DeleteNode]") {
     auto module_two = fl::Linear(1, 1);
     network.AddNode(neurons::NodeType::Linear, std::move(module_two));
 
-    network.AddLink(network.GetNodes().at(0), network.GetNodes().at(1));
+    network.AddLink(network.GetNodes().at(0),
+        network.GetNodes().at(1));
 
     REQUIRE(network.GetLinks().size() == 1);
     network.DeleteNode(network.GetNodes().at(0));
@@ -148,7 +154,8 @@ TEST_CASE("Network: Deleting Links", "[Network][DeleteLink]") {
   auto module_two = fl::Linear(1, 1);
   network.AddNode(neurons::NodeType::Linear, std::move(module_two));
 
-  network.AddLink(network.GetNodes().at(0), network.GetNodes().at(1));
+  network.AddLink(network.GetNodes().at(0),
+      network.GetNodes().at(1));
 
   SECTION("Removing an in-network link") {
     network.DeleteLink(network.GetLinks().at(0));

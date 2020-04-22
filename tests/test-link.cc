@@ -14,7 +14,8 @@ TEST_CASE("Link: CanLink", "[Link][CanLink]") {
   // For now, all Nodes are allowed to link
   SECTION("Always Yes") {
     auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    auto node = neurons::Node(1, neurons::NodeType::Conv2D, std::move(module));
+    auto node = neurons::Node(1,
+        neurons::NodeType::Conv2D, std::move(module));
     REQUIRE(neurons::Link::CanLink(node, node));
   }
 }
@@ -26,9 +27,11 @@ TEST_CASE("Link: CanLink", "[Link][CanLink]") {
 TEST_CASE("Link: BuildLink", "[Link][BuildLink]") {
   SECTION("Always Yes") {
     auto input_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    auto input_node = neurons::Node(1, neurons::NodeType::Conv2D, std::move(input_module));
+    auto input_node = neurons::Node(1,
+        neurons::NodeType::Conv2D, std::move(input_module));
     auto output_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    auto output_node = neurons::Node(1, neurons::NodeType::Conv2D, std::move(output_module));
+    auto output_node = neurons::Node(1,
+        neurons::NodeType::Conv2D, std::move(output_module));
     REQUIRE(neurons::Link::CanLink(input_node, output_node));
 
     auto link = neurons::Link::BuildLink(3, input_node, output_node);

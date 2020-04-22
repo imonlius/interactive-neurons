@@ -37,7 +37,8 @@ void Node::zeroGrad() {
   this->module_->zeroGrad();
 }
 
-std::vector<fl::Variable> Node::forward(const std::vector<fl::Variable>& inputs) {
+std::vector<fl::Variable> Node::forward(
+    const std::vector<fl::Variable>& inputs) {
   return this->module_->forward(inputs);
 }
 

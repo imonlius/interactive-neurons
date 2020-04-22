@@ -40,7 +40,8 @@ TEST_CASE("LinkAdapter: Constructor", "[LinkAdapter][Constructor]") {
  * std::vector<LinkAdapter> BuildLinkAdapters(std::vector<Link>& links);
  */
 
-TEST_CASE("LinkAdapter: BuildLinkAdapters", "[LinkAdapter][BuildLinkAdapters]") {
+TEST_CASE("LinkAdapter: BuildLinkAdapters",
+    "[LinkAdapter][BuildLinkAdapters]") {
 
   SECTION("No Links") {
     std::vector<neurons::Link> links;
