@@ -9,7 +9,7 @@
  * Node(size_t id, NodeType type, fl::ModulePtr&& module_ptr)
  */
 
-TEST_CASE("Node Constructor", "[Node][Constructor]") {
+TEST_CASE("Node: Constructor", "[Node][Constructor]") {
   SECTION("Linear NodeType") {
     auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
     auto node = neurons::Node(0, neurons::NodeType::Conv2D, std::move(module));

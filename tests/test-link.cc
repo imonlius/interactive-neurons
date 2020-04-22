@@ -4,6 +4,8 @@
 #include <neurons/link.h>
 #include <neurons/node.h>
 
+// TODO: Update test cases to reflect link criteria.
+
 /*
  * static bool CanLink(const Node& input, const Node& output);
  */

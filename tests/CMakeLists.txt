@@ -1,6 +1,8 @@
 get_filename_component(CINDER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../" ABSOLUTE)
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
+set(CMAKE_CXX_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+
 file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
         "${FinalProject_SOURCE_DIR}/tests/*.h"
         "${FinalProject_SOURCE_DIR}/tests/*.hpp"
