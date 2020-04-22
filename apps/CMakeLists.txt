@@ -8,19 +8,19 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS
         "${FinalProject_SOURCE_DIR}/apps/*.cpp")
 
 ci_make_app(
-    APP_NAME    cinder-myapp
+    APP_NAME    cinder-interactive-neurons
     CINDER_PATH ${CINDER_PATH}
     SOURCES     ${SOURCE_LIST}
     LIBRARIES   mylibrary
     BLOCKS      imgui-node-editor
 )
 
-target_compile_features(cinder-myapp PRIVATE cxx_std_14)
+target_compile_features(cinder-interactive-neurons PRIVATE cxx_std_14)
 
 # Cross-platform compiler lints
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
         OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(cinder-myapp PRIVATE
+    target_compile_options(cinder-interactive-neurons PRIVATE
             -Wall
             -Wextra
             -Wswitch
@@ -33,6 +33,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
             -pedantic-errors)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     cmake_policy(SET CMP0015 NEW)
-    target_compile_options(cinder-myapp PRIVATE
+    target_compile_options(cinder-interactive-neurons PRIVATE
             /W3)
 endif ()

@@ -108,4 +108,4 @@ find_package(ArrayFire REQUIRED)
 find_package(flashlight REQUIRED)
 find_package(mkldnn REQUIRED)
 
-target_link_libraries(cinder-myapp mkldnn ArrayFire::af flashlight::flashlight)
+target_link_libraries(cinder-interactive-neurons mkldnn ArrayFire::af flashlight::flashlight)

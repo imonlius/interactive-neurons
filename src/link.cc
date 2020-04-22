@@ -10,6 +10,7 @@ size_t Link::GetId() const {
 }
 
 bool Link::CanLink(const Node& input, const Node& output) {
+  // TODO: Implement Link checker.
   return true;
 }
 
