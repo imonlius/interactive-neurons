@@ -27,6 +27,7 @@ struct LinkAdapter {
 std::vector<LinkAdapter> BuildLinkAdapters(std::vector<Link>& links);
 
 // Returns a pointer to the Link in the passed vector with the passed LinkId.
+// If multiple Links have the same LinkId, will return the first one.
 // Returns nullptr if none of the Pins match the criteria.
 LinkAdapter* FindOwnerLink(std::vector<LinkAdapter>& links,
     const ax::NodeEditor::LinkId& id);

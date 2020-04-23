@@ -78,7 +78,8 @@ TEST_CASE("NodeAdapter: BuildNodeAdapters",
     const ax::NodeEditor::PinId& id)
  */
 
-TEST_CASE("NodeAdapter: FindOwnerNode", "[NodeAdapter][FindOwnerNode]") {
+TEST_CASE("NodeAdapter: FindOwnerNode: Pin",
+    "[NodeAdapter][FindOwnerNode][Pin]") {
 
   const size_t node_id = 17;
   const size_t node_id_two = 19;
@@ -107,6 +108,40 @@ TEST_CASE("NodeAdapter: FindOwnerNode", "[NodeAdapter][FindOwnerNode]") {
   SECTION("PinId belongs to no Node") {
     ax::NodeEditor::PinId pin = 999;
     REQUIRE(neurons::adapter::FindOwnerNode(adapters, pin) == nullptr);
+  }
+
+}
+
+/*
+ * NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes,
+    const ax::NodeEditor::NodeId& id)
+ */
+
+TEST_CASE("NodeAdapter: FindOwnerNode: Node",
+          "[NodeAdapter][FindOwnerNode][Node]") {
+
+  const size_t node_id = 17;
+  const size_t node_id_two = 19;
+
+  auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
+  auto module_two = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
+
+  std::vector<neurons::Node> nodes;
+  nodes.emplace_back(node_id,
+                     neurons::NodeType::Conv2D, std::move(module));
+  nodes.emplace_back(node_id_two,
+                     neurons::NodeType::Conv2D, std::move(module_two));
+
+  auto adapters = neurons::adapter::BuildNodeAdapters(nodes);
+
+  SECTION("Node is present") {
+    auto id = adapters.at(1).id_;
+    REQUIRE(neurons::adapter::FindOwnerNode(adapters, id) == &adapters.at(1));
+  }
+
+  SECTION("Node is not present") {
+    ax::NodeEditor::NodeId id = 999;
+    REQUIRE(neurons::adapter::FindOwnerNode(adapters, id) == nullptr);
   }
 
 }

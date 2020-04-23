@@ -31,7 +31,14 @@ struct NodeAdapter {
 // Return a vector of NodeAdapters wrapped around the passed nodes
 std::vector<NodeAdapter> BuildNodeAdapters(std::vector<Node>& nodes);
 
-// Returns a pointer to the Node in the passed vector that owns the PinId.
+// Returns a pointer to a Node in the passed vector that owns the NodeId.
+// If multiple nodes have the NodeId, will return the first one.
+// Returns nullptr if none of the Nodes match the criteria.
+NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes,
+                           const ax::NodeEditor::NodeId& id);
+
+// Returns a pointer to a Node in the passed vector that owns the PinId.
+// If multiple nodes have the PinId, will return the first one.
 // Returns nullptr if none of the Nodes match the criteria.
 NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes,
     const ax::NodeEditor::PinId& id);
