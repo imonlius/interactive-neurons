@@ -4,7 +4,6 @@
 #define FINALPROJECT_IMGUI_ADAPTER_ADAPTER_H
 
 #include "neurons/node.h"
-#include "imgui_node_editor.h"
 
 namespace neurons {
 
@@ -17,9 +16,9 @@ static const size_t kIdMultiplier = 3;
 
 // Adapter between the imgui-node-editor graph node and a neuron Node
 struct NodeAdapter {
-  ax::NodeEditor::NodeId id_;
-  ax::NodeEditor::PinId input_id_;
-  ax::NodeEditor::PinId output_id_;
+  size_t id_;
+  size_t input_id_;
+  size_t output_id_;
 
   Node* node_;
 
@@ -31,17 +30,15 @@ struct NodeAdapter {
 // Return a vector of NodeAdapters wrapped around the passed nodes
 std::vector<NodeAdapter> BuildNodeAdapters(std::vector<Node>& nodes);
 
-// Returns a pointer to a Node in the passed vector that owns the NodeId.
-// If multiple nodes have the NodeId, will return the first one.
+// Returns a pointer to a Node in the passed vector that owns the node ID.
+// If multiple nodes have the node ID, will return the first one.
 // Returns nullptr if none of the Nodes match the criteria.
-NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes,
-                           const ax::NodeEditor::NodeId& id);
+NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes, size_t id);
 
-// Returns a pointer to a Node in the passed vector that owns the PinId.
-// If multiple nodes have the PinId, will return the first one.
+// Returns a pointer to a Node in the passed vector that owns the pin ID.
+// If multiple nodes have the pin ID, will return the first one.
 // Returns nullptr if none of the Nodes match the criteria.
-NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes,
-    const ax::NodeEditor::PinId& id);
+NodeAdapter* FindPinOwner(std::vector<NodeAdapter>& nodes, size_t id);
 
 }  // namespace adapter
 

@@ -22,8 +22,7 @@ std::vector<NodeAdapter> BuildNodeAdapters(std::vector<Node>& nodes) {
   return adapters;
 }
 
-NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes,
-                           const ax::NodeEditor::NodeId& id) {
+NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes, size_t id) {
   for (auto& node : nodes) {
     if (node.id_ == id) {
       return &node;
@@ -32,8 +31,7 @@ NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes,
   return nullptr;
 }
 
-NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes,
-    const ax::NodeEditor::PinId& id) {
+NodeAdapter* FindPinOwner(std::vector<NodeAdapter>& nodes, size_t id) {
   for (auto& node : nodes) {
     if (node.input_id_ == id || node.output_id_ == id) {
       return &node;

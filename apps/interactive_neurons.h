@@ -6,7 +6,6 @@
 #include <cinder/app/App.h>
 #include <imgui_adapter/link-adapter.h>
 #include <imgui_adapter/node-adapter.h>
-#include <imgui_node_editor.h>
 #include <neurons/network.h>
 
 namespace neurons {
@@ -20,7 +19,6 @@ class InteractiveNeurons : public cinder::app::App {
   void keyDown(cinder::app::KeyEvent) override;
 
  private:
-  ax::NodeEditor::EditorContext* context_;
   Network network_;
 
   // Draw all the nodes on the imgui-node-editor NodeEditor.
@@ -28,8 +26,7 @@ class InteractiveNeurons : public cinder::app::App {
   // Attempt to create a link between Nodes on the Network.
   void AttemptLink(std::vector<adapter::NodeAdapter>& nodes,
                    std::vector<adapter::LinkAdapter>& links,
-                   const ax::NodeEditor::PinId& startPinId,
-                   const ax::NodeEditor::PinId& endPinId);
+                   size_t start, size_t end);
 };
 
 }  // namespace neurons

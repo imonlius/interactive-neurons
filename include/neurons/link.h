@@ -2,8 +2,6 @@
 #ifndef FINALPROJECT_NEURONS_LINK_H_
 #define FINALPROJECT_NEURONS_LINK_H_
 
-#include <imgui_node_editor.h>
-
 #include "node.h"
 
 namespace neurons {

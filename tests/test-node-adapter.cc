@@ -18,11 +18,10 @@ TEST_CASE("NodeAdapter: Constructor", "[NodeAdapter][Constructor]") {
   auto node_adapter = neurons::adapter::NodeAdapter(node);
   REQUIRE(node_adapter.node_ == &node);
 
-  REQUIRE(node_adapter.id_.Get() ==
-          node_id * neurons::adapter::kIdMultiplier);
-  REQUIRE(node_adapter.input_id_.Get() ==
+  REQUIRE(node_adapter.id_ == node_id * neurons::adapter::kIdMultiplier);
+  REQUIRE(node_adapter.input_id_ ==
           node_id * neurons::adapter::kIdMultiplier + 1);
-  REQUIRE(node_adapter.output_id_.Get() ==
+  REQUIRE(node_adapter.output_id_ ==
           node_id * neurons::adapter::kIdMultiplier + 2);
 }
 
@@ -56,30 +55,28 @@ TEST_CASE("NodeAdapter: BuildNodeAdapters",
     REQUIRE(adapters.size() == 2);
 
     REQUIRE(adapters.at(0).node_ == &nodes.at(0));
-    REQUIRE(adapters.at(0).id_.Get() ==
+    REQUIRE(adapters.at(0).id_ ==
             node_id * neurons::adapter::kIdMultiplier);
-    REQUIRE(adapters.at(0).input_id_.Get() ==
+    REQUIRE(adapters.at(0).input_id_ ==
             node_id * neurons::adapter::kIdMultiplier + 1);
-    REQUIRE(adapters.at(0).output_id_.Get() ==
+    REQUIRE(adapters.at(0).output_id_ ==
             node_id * neurons::adapter::kIdMultiplier + 2);
 
     REQUIRE(adapters.at(1).node_ == &nodes.at(1));
-    REQUIRE(adapters.at(1).id_.Get() ==
+    REQUIRE(adapters.at(1).id_ ==
             node_id_two * neurons::adapter::kIdMultiplier);
-    REQUIRE(adapters.at(1).input_id_.Get() ==
+    REQUIRE(adapters.at(1).input_id_ ==
             node_id_two * neurons::adapter::kIdMultiplier + 1);
-    REQUIRE(adapters.at(1).output_id_.Get() ==
+    REQUIRE(adapters.at(1).output_id_ ==
             node_id_two * neurons::adapter::kIdMultiplier + 2);
   }
 }
 
 /*
- * NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes,
-    const ax::NodeEditor::PinId& id)
+ * NodeAdapter* FindPinOwner(std::vector<NodeAdapter>& nodes, size_t id)
  */
 
-TEST_CASE("NodeAdapter: FindOwnerNode: Pin",
-    "[NodeAdapter][FindOwnerNode][Pin]") {
+TEST_CASE("NodeAdapter: FindPinOwner", "[NodeAdapter][FindPinOwner]") {
 
   const size_t node_id = 17;
   const size_t node_id_two = 19;
@@ -97,28 +94,25 @@ TEST_CASE("NodeAdapter: FindOwnerNode: Pin",
 
   SECTION("PinId is Node's Input") {
     auto pin = adapters.at(0).input_id_;
-    REQUIRE(neurons::adapter::FindOwnerNode(adapters, pin) == &adapters.at(0));
+    REQUIRE(neurons::adapter::FindPinOwner(adapters, pin) == &adapters.at(0));
   }
 
   SECTION("PinId is Node's Output") {
     auto pin = adapters.at(1).output_id_;
-    REQUIRE(neurons::adapter::FindOwnerNode(adapters, pin) == &adapters.at(1));
+    REQUIRE(neurons::adapter::FindPinOwner(adapters, pin) == &adapters.at(1));
   }
 
   SECTION("PinId belongs to no Node") {
-    ax::NodeEditor::PinId pin = 999;
-    REQUIRE(neurons::adapter::FindOwnerNode(adapters, pin) == nullptr);
+    REQUIRE(neurons::adapter::FindPinOwner(adapters, 999) == nullptr);
   }
 
 }
 
 /*
- * NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes,
-    const ax::NodeEditor::NodeId& id)
+ * NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes, size_t id)
  */
 
-TEST_CASE("NodeAdapter: FindOwnerNode: Node",
-          "[NodeAdapter][FindOwnerNode][Node]") {
+TEST_CASE("NodeAdapter: FindOwnerNode", "[NodeAdapter][FindOwnerNode]") {
 
   const size_t node_id = 17;
   const size_t node_id_two = 19;
@@ -140,8 +134,7 @@ TEST_CASE("NodeAdapter: FindOwnerNode: Node",
   }
 
   SECTION("Node is not present") {
-    ax::NodeEditor::NodeId id = 999;
-    REQUIRE(neurons::adapter::FindOwnerNode(adapters, id) == nullptr);
+    REQUIRE(neurons::adapter::FindOwnerNode(adapters, 999) == nullptr);
   }
 
 }

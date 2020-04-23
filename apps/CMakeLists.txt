@@ -12,7 +12,7 @@ ci_make_app(
     CINDER_PATH ${CINDER_PATH}
     SOURCES     ${SOURCE_LIST}
     LIBRARIES   mylibrary
-    BLOCKS      imgui-node-editor
+    BLOCKS      imnodes
 )
 
 target_compile_features(cinder-interactive-neurons PRIVATE cxx_std_14)

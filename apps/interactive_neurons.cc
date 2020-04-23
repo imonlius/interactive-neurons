@@ -4,6 +4,7 @@
 
 #include <cinder/CinderImGui.h>
 #include <cinder/gl/wrapper.h>
+#include <imnodes.h>
 
 #include "imgui_adapter/link-adapter.h"
 #include "imgui_adapter/node-adapter.h"
@@ -11,16 +12,16 @@
 namespace neurons {
 
 using cinder::app::KeyEvent;
+using cinder::app::MouseEvent;
 
-namespace ed = ax::NodeEditor;
-
-InteractiveNeurons::InteractiveNeurons() = default;
+InteractiveNeurons::InteractiveNeurons() {
+  network_ = Network();
+};
 
 void InteractiveNeurons::setup() {
   ImGui::Initialize(ImGui::Options());
-  context_ = ax::NodeEditor::CreateEditor();
+  imnodes::Initialize();
 
-  network_ = Network();
   network_.AddNode(NodeType::Conv2D, fl::Conv2D(1, 1, 1, 1));
   network_.AddNode(NodeType::Conv2D, fl::Conv2D(1, 1, 1, 1));
 }
@@ -30,27 +31,30 @@ void InteractiveNeurons::update() { }
 void InteractiveNeurons::DrawNodes(
     const std::vector<adapter::NodeAdapter>& nodes) {
   for (const adapter::NodeAdapter& node : nodes) {
-    ed::BeginNode(node.id_);
-    ImGui::Text("Node");
+    imnodes::BeginNode(node.id_);
 
-    ed::BeginPin(node.input_id_, ed::PinKind::Input);
+    imnodes::BeginNodeTitleBar();
+    ImGui::TextUnformatted("Node");
+    imnodes::EndNodeTitleBar();
+
+    imnodes::BeginInputAttribute(node.input_id_);
     ImGui::Text("Input");
-    ed::EndPin();
+    imnodes::EndAttribute();
 
-    ed::BeginPin(node.output_id_, ed::PinKind::Output);
+    imnodes::BeginOutputAttribute(node.output_id_);
+    ImGui::Indent(40);
     ImGui::Text("Output");
-    ed::EndPin();
+    imnodes::EndAttribute();
 
-    ed::EndNode();
+    imnodes::EndNode();
   }
 }
 
 void InteractiveNeurons::AttemptLink(std::vector<adapter::NodeAdapter>& nodes,
-    std::vector<adapter::LinkAdapter>& links,
-    const ed::PinId& startPinId, const ed::PinId& endPinId) {
+    std::vector<adapter::LinkAdapter>& links, size_t start_id, size_t end_id) {
 
-  adapter::NodeAdapter* start = adapter::FindOwnerNode(nodes, startPinId);
-  adapter::NodeAdapter* end = adapter::FindOwnerNode(nodes, endPinId);
+  adapter::NodeAdapter* start = adapter::FindPinOwner(nodes, start_id);
+  adapter::NodeAdapter* end = adapter::FindPinOwner(nodes, end_id);
 
   // nullptr safety, then check that the connection is between two diff. nodes
   if (start == nullptr || end == nullptr || start == end) {
@@ -61,11 +65,11 @@ void InteractiveNeurons::AttemptLink(std::vector<adapter::NodeAdapter>& nodes,
   adapter::NodeAdapter* output;
 
   // figure out the input and the output nodes
-  if (start->output_id_ == startPinId && end->input_id_ == endPinId) {
+  if (start->output_id_ == start_id && end->input_id_ == end_id) {
     // connection dragged from output to input pin
     output = start;
     input = end;
-  } else if (start->input_id_ == startPinId && end->output_id_ == endPinId) {
+  } else if (start->input_id_ == start_id && end->output_id_ == end_id) {
     // connection dragged from input to output pin
     output = end;
     input = start;
@@ -81,20 +85,13 @@ void InteractiveNeurons::AttemptLink(std::vector<adapter::NodeAdapter>& nodes,
   }
 
   links.emplace_back(*network_.AddLink(*input->node_, *output->node_));
-  ed::Link(links.back().id_, links.back().output_id_, links.back().input_id_);
 }
 
 void InteractiveNeurons::draw() {
   cinder::gl::clear(cinder:: Color( 0, 0, 0 ) );
 
-  auto& io = ImGui::GetIO();
-
-  ed::SetCurrentEditor(context_);
-
-  // Following code derived from example:
-  // github.com/thedmd/imgui-node-editor/blob/master/Examples/BasicInteraction
-  // Start interaction with editor.
-  ed::Begin("Node Editor", ImVec2(0.0, 0.0f));
+  ImGui::Begin("simple node editor");
+  imnodes::BeginNodeEditor();
 
   // Draw nodes
   auto nodes = adapter::BuildNodeAdapters(network_.GetNodes());
@@ -103,51 +100,19 @@ void InteractiveNeurons::draw() {
   // Draw Links
   auto links = adapter::BuildLinkAdapters(network_.GetLinks());
   for (const adapter::LinkAdapter& link : links) {
-    ed::Link(link.id_, link.input_id_, link.output_id_);
+    imnodes::Link(link.id_, link.output_id_, link.input_id_);
   }
 
-  // Handle creation action, returns true if editor want to create new object (node or link)
-  if (ed::BeginCreate()) {
-    ed::PinId start_pin, end_pin;
-    if (ed::QueryNewLink(&start_pin, &end_pin)) {
-      // QueryNewLink returns true if editor want to create new link between pins.
-      if (ed::AcceptNewItem()) {
-        // ed::AcceptNewItem() return true when user release mouse button.
-        AttemptLink(nodes, links, start_pin, end_pin);
-      }
-      // You may choose to reject connection between these nodes
-      // by calling ed::RejectNewItem(). This will allow editor to give
-      // visual feedback by changing link thickness and color.
-    }
+  imnodes::EndNodeEditor();
+
+  // See if any links were drawn
+  int start_pin;
+  int end_pin;
+  if (imnodes::IsLinkCreated(&start_pin, &end_pin)) {
+    AttemptLink(nodes, links, start_pin, end_pin);
   }
-  ed::EndCreate(); // Wraps up object creation action handling.
 
-
-  // Handle deletion action
-  if (ed::BeginDelete()) {
-    // Loop over them links marked for deletion
-    ed::LinkId deletedLinkId;
-    while (ed::QueryDeletedLink(&deletedLinkId)) {
-      // Accept deletion.
-      if (ed::AcceptDeletedItem()) {
-        // Then remove link from your data.
-        for (auto it = links.begin(); it != links.end(); ++it) {
-          if (it->id_ == deletedLinkId) {
-            links.erase(it);
-            break;
-          }
-        }
-      }
-      // You may reject link deletion by calling:
-      // ed::RejectDeletedItem();
-    }
-  }
-  ed::EndDelete(); // Wrap up deletion action
-
-  // End of interaction with editor.
-  ed::End();
-
-  ed::SetCurrentEditor(nullptr);
+  ImGui::End();
 }
 
 void InteractiveNeurons::keyDown(KeyEvent event) { }

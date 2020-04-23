@@ -25,8 +25,7 @@ std::vector<LinkAdapter> BuildLinkAdapters(std::vector<Link>& links) {
   return adapters;
 }
 
-LinkAdapter* FindOwnerLink(std::vector<LinkAdapter>& links,
-                           const ax::NodeEditor::LinkId& id) {
+LinkAdapter* FindOwnerLink(std::vector<LinkAdapter>& links, size_t id) {
   for (auto& link : links) {
     if (link.id_ == id) {
       return &link;
