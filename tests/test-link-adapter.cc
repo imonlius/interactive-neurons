@@ -16,11 +16,11 @@ TEST_CASE("LinkAdapter: Constructor", "[LinkAdapter][Constructor]") {
   const size_t link_id = 3;
 
   auto input_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-  auto input_node = neurons::Node(input_id,
-      neurons::NodeType::Conv2D, std::move(input_module));
+  auto input_node = neurons::Node(input_id, neurons::NodeType::Conv2D,
+      std::make_unique<fl::Conv2D>(input_module));
   auto output_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-  auto output_node = neurons::Node(output_id,
-      neurons::NodeType::Conv2D, std::move(output_module));
+  auto output_node = neurons::Node(output_id, neurons::NodeType::Conv2D,
+      std::make_unique<fl::Conv2D>(output_module));
 
   auto link = neurons::Link::BuildLink(link_id, input_node, output_node);
 
@@ -55,11 +55,11 @@ TEST_CASE("LinkAdapter: BuildLinkAdapters",
     const size_t reverse_link_id = 4;
 
     auto input_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    auto input_node = neurons::Node(input_id,
-        neurons::NodeType::Conv2D, std::move(input_module));
+    auto input_node = neurons::Node(input_id, neurons::NodeType::Conv2D,
+                                    std::make_unique<fl::Conv2D>(input_module));
     auto output_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    auto output_node = neurons::Node(output_id,
-        neurons::NodeType::Conv2D, std::move(output_module));
+    auto output_node = neurons::Node(output_id, neurons::NodeType::Conv2D,
+        std::make_unique<fl::Conv2D>(output_module));
 
     auto link = neurons::Link::BuildLink(link_id, input_node, output_node);
     auto link_reverse = neurons::Link::BuildLink(
@@ -101,11 +101,11 @@ TEST_CASE("LinkAdapter: FindOwnerLink", "[LinkAdapter][FindOwnerLink]") {
   const size_t reverse_link_id = 4;
 
   auto input_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-  auto input_node = neurons::Node(input_id,
-      neurons::NodeType::Conv2D, std::move(input_module));
+  auto input_node = neurons::Node(input_id, neurons::NodeType::Conv2D,
+      std::make_unique<fl::Conv2D>(input_module));
   auto output_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-  auto output_node = neurons::Node(output_id,
-      neurons::NodeType::Conv2D, std::move(output_module));
+  auto output_node = neurons::Node(output_id, neurons::NodeType::Conv2D,
+      std::make_unique<fl::Conv2D>(output_module));
 
   auto link = neurons::Link::BuildLink(link_id, input_node, output_node);
   auto link_reverse = neurons::Link::BuildLink(reverse_link_id,

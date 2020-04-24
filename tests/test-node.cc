@@ -12,13 +12,15 @@
 TEST_CASE("Node: Constructor", "[Node][Constructor]") {
   SECTION("Linear NodeType") {
     auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    auto node = neurons::Node(0, neurons::NodeType::Conv2D, std::move(module));
+    auto node = neurons::Node(0, neurons::NodeType::Conv2D,
+                              std::make_unique<fl::Conv2D>(module));
     REQUIRE(node.GetId() == 0);
     REQUIRE(node.GetNodeType() == neurons::NodeType::Conv2D);
   }
   SECTION("Conv2D NodeType") {
     auto module = fl::Linear(1, 1);
-    auto node = neurons::Node(1, neurons::NodeType::Linear, std::move(module));
+    auto node = neurons::Node(1, neurons::NodeType::Linear,
+                              std::make_unique<fl::Linear>(module));
     REQUIRE(node.GetId() == 1);
     REQUIRE(node.GetNodeType() == neurons::NodeType::Linear);
   }

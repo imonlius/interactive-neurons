@@ -14,7 +14,8 @@ TEST_CASE("Network: Add Nodes", "[Network][AddNode]") {
 
   SECTION("Add one Conv2D node") {
     auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    network.AddNode(neurons::NodeType::Conv2D, std::move(module));
+    network.AddNode(neurons::NodeType::Conv2D,
+        std::make_unique<fl::Conv2D>(module));
 
     REQUIRE(network.GetNodes().size() == 1);
     REQUIRE(network.GetNodes().at(0).GetId() == 0);
@@ -24,7 +25,8 @@ TEST_CASE("Network: Add Nodes", "[Network][AddNode]") {
 
   SECTION("Add one Linear node") {
     auto module = fl::Linear(1, 1);
-    network.AddNode(neurons::NodeType::Linear, std::move(module));
+    network.AddNode(neurons::NodeType::Linear,
+                    std::make_unique<fl::Linear>(module));
 
     REQUIRE(network.GetNodes().size() == 1);
     REQUIRE(network.GetNodes().at(0).GetId() == 0);
@@ -34,10 +36,12 @@ TEST_CASE("Network: Add Nodes", "[Network][AddNode]") {
 
   SECTION("Add two nodes") {
     auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    network.AddNode(neurons::NodeType::Conv2D, std::move(module));
+    network.AddNode(neurons::NodeType::Conv2D,
+                    std::make_unique<fl::Conv2D>(module));
 
     auto module_two = fl::Linear(1, 1);
-    network.AddNode(neurons::NodeType::Linear, std::move(module_two));
+    network.AddNode(neurons::NodeType::Linear,
+                    std::make_unique<fl::Linear>(module_two));
 
     REQUIRE(network.GetNodes().size() == 2);
 
@@ -60,7 +64,8 @@ TEST_CASE("Network: Delete Nodes", "[Network][DeleteNode]") {
 
   SECTION("Delete the only node") {
     auto module = fl::Linear(1, 1);
-    network.AddNode(neurons::NodeType::Linear, std::move(module));
+    network.AddNode(neurons::NodeType::Linear,
+                    std::make_unique<fl::Linear>(module));
 
     network.DeleteNode(network.GetNodes().at(0));
     REQUIRE(network.GetNodes().empty());
@@ -68,10 +73,12 @@ TEST_CASE("Network: Delete Nodes", "[Network][DeleteNode]") {
 
   SECTION("Delete a node") {
     auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    network.AddNode(neurons::NodeType::Conv2D, std::move(module));
+    network.AddNode(neurons::NodeType::Conv2D,
+                    std::make_unique<fl::Conv2D>(module));
 
     auto module_two = fl::Linear(1, 1);
-    network.AddNode(neurons::NodeType::Linear, std::move(module_two));
+    network.AddNode(neurons::NodeType::Linear,
+                    std::make_unique<fl::Linear>(module_two));
 
     REQUIRE(network.GetNodes().size() == 2);
 
@@ -86,10 +93,11 @@ TEST_CASE("Network: Delete Nodes", "[Network][DeleteNode]") {
   SECTION("Delete a node not in the network") {
     auto module = fl::Linear(1, 1);
     auto module_copy = fl::Linear(module);
-    network.AddNode(neurons::NodeType::Linear, std::move(module));
+    network.AddNode(neurons::NodeType::Linear,
+                    std::make_unique<fl::Linear>(module));
 
-    network.DeleteNode(neurons::Node(
-        5, neurons::NodeType::Linear, std::move(module_copy)));
+    network.DeleteNode(neurons::Node(5, neurons::NodeType::Linear,
+        std::make_unique<fl::Linear>(module_copy)));
 
     // Deleting a node not in the Network should not do anything.
     REQUIRE(network.GetNodes().size() == 1);
@@ -97,9 +105,11 @@ TEST_CASE("Network: Delete Nodes", "[Network][DeleteNode]") {
 
   SECTION("Deleting a node that is linked") {
     auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    network.AddNode(neurons::NodeType::Conv2D, std::move(module));
+    network.AddNode(neurons::NodeType::Conv2D,
+                    std::make_unique<fl::Conv2D>(module));
     auto module_two = fl::Linear(1, 1);
-    network.AddNode(neurons::NodeType::Linear, std::move(module_two));
+    network.AddNode(neurons::NodeType::Linear,
+                    std::make_unique<fl::Linear>(module_two));
 
     network.AddLink(network.GetNodes().at(0),
         network.GetNodes().at(1));
@@ -118,9 +128,11 @@ TEST_CASE("Network: Add Links", "[Network][AddLink]") {
   neurons::Network network;
 
   auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-  network.AddNode(neurons::NodeType::Conv2D, std::move(module));
+  network.AddNode(neurons::NodeType::Conv2D,
+                  std::make_unique<fl::Conv2D>(module));
   auto module_two = fl::Linear(1, 1);
-  network.AddNode(neurons::NodeType::Linear, std::move(module_two));
+  network.AddNode(neurons::NodeType::Linear,
+                  std::make_unique<fl::Linear>(module_two));
 
   SECTION("Adding a valid link between two nodes") {
     REQUIRE(network.AddLink(
@@ -134,8 +146,8 @@ TEST_CASE("Network: Add Links", "[Network][AddLink]") {
 
   SECTION("Adding a link between a node not in the network (invalid)") {
     auto mod = fl::Linear(1, 1);
-    auto not_networked_node = neurons::Node(
-        5, neurons::NodeType::Linear, std::move(mod));
+    auto not_networked_node = neurons::Node(5, neurons::NodeType::Linear,
+        std::make_unique<fl::Linear>(mod));
     REQUIRE(network.AddLink(
         network.GetNodes().at(0), not_networked_node) == nullptr);
   }
@@ -150,9 +162,11 @@ TEST_CASE("Network: Deleting Links", "[Network][DeleteLink]") {
   neurons::Network network;
 
   auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-  network.AddNode(neurons::NodeType::Conv2D, std::move(module));
+  network.AddNode(neurons::NodeType::Conv2D,
+      std::make_unique<fl::Conv2D>(module));
   auto module_two = fl::Linear(1, 1);
-  network.AddNode(neurons::NodeType::Linear, std::move(module_two));
+  network.AddNode(neurons::NodeType::Linear,
+                  std::make_unique<fl::Linear>(module_two));
 
   network.AddLink(network.GetNodes().at(0),
       network.GetNodes().at(1));

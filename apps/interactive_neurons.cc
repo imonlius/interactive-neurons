@@ -22,7 +22,7 @@ using neurons::Link;
 
 InteractiveNeurons::InteractiveNeurons() {
   network_ = Network();
-};
+}
 
 void InteractiveNeurons::setup() {
   ImGui::Initialize(ImGui::Options());
@@ -47,7 +47,7 @@ void InteractiveNeurons::DrawNodes(
 
     imnodes::BeginNodeTitleBar();
     auto test = node.node_->prettyString();
-    ImGui::TextWrapped(node.node_->prettyString().c_str());
+    ImGui::TextWrapped("%s", node.node_->prettyString().c_str());
     imnodes::EndNodeTitleBar();
 
     imnodes::BeginInputAttribute(node.input_id_);
@@ -172,6 +172,7 @@ void InteractiveNeurons::draw() {
 
   if (ImGui::BeginPopup("Add Node")) {
       auto mouse_position = ImGui::GetMousePosOnOpeningCurrentPopup();
+      // TODO: Implement a window for new Node configuration
       if (ImGui::MenuItem("Add Conv2D Node")) {
         network_.AddNode(NodeType::Conv2D,
             std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));

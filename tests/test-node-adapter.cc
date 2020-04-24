@@ -12,8 +12,8 @@ TEST_CASE("NodeAdapter: Constructor", "[NodeAdapter][Constructor]") {
   const size_t node_id = 17;
 
   auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-  auto node = neurons::Node(node_id,
-      neurons::NodeType::Conv2D, std::move(module));
+  auto node = neurons::Node(node_id, neurons::NodeType::Conv2D,
+      std::make_unique<fl::Conv2D>(module));
 
   auto node_adapter = neurons::adapter::NodeAdapter(node);
   REQUIRE(node_adapter.node_ == &node);
@@ -45,10 +45,10 @@ TEST_CASE("NodeAdapter: BuildNodeAdapters",
     auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
     auto module_two = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
 
-    nodes.emplace_back(node_id,
-        neurons::NodeType::Conv2D, std::move(module));
-    nodes.emplace_back(node_id_two,
-        neurons::NodeType::Conv2D, std::move(module_two));
+    nodes.emplace_back(node_id, neurons::NodeType::Conv2D,
+                       std::make_unique<fl::Conv2D>(module));
+    nodes.emplace_back(node_id_two, neurons::NodeType::Conv2D,
+                       std::make_unique<fl::Conv2D>(module_two));
 
     auto adapters = neurons::adapter::BuildNodeAdapters(nodes);
 
@@ -85,10 +85,10 @@ TEST_CASE("NodeAdapter: FindPinOwner", "[NodeAdapter][FindPinOwner]") {
   auto module_two = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
 
   std::vector<neurons::Node> nodes;
-  nodes.emplace_back(node_id,
-      neurons::NodeType::Conv2D, std::move(module));
-  nodes.emplace_back(node_id_two,
-      neurons::NodeType::Conv2D, std::move(module_two));
+  nodes.emplace_back(node_id, neurons::NodeType::Conv2D,
+                     std::make_unique<fl::Conv2D>(module));
+  nodes.emplace_back(node_id_two, neurons::NodeType::Conv2D,
+                     std::make_unique<fl::Conv2D>(module_two));
 
   auto adapters = neurons::adapter::BuildNodeAdapters(nodes);
 
@@ -121,10 +121,10 @@ TEST_CASE("NodeAdapter: FindOwnerNode", "[NodeAdapter][FindOwnerNode]") {
   auto module_two = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
 
   std::vector<neurons::Node> nodes;
-  nodes.emplace_back(node_id,
-                     neurons::NodeType::Conv2D, std::move(module));
-  nodes.emplace_back(node_id_two,
-                     neurons::NodeType::Conv2D, std::move(module_two));
+  nodes.emplace_back(node_id, neurons::NodeType::Conv2D,
+                     std::make_unique<fl::Conv2D>(module));
+  nodes.emplace_back(node_id_two, neurons::NodeType::Conv2D,
+                     std::make_unique<fl::Conv2D>(module_two));
 
   auto adapters = neurons::adapter::BuildNodeAdapters(nodes);
 

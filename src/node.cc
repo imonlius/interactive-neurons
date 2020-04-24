@@ -13,6 +13,12 @@ NodeType Node::GetNodeType() const {
   return type_;
 }
 
+Node::Node(size_t id, NodeType type, std::unique_ptr<fl::Module> module) {
+  id_ = id;
+  type_ = type;
+  module_ = std::move(module);
+}
+
 std::vector<fl::Variable> Node::params() const {
   return this->module_->params();
 }
@@ -44,6 +50,6 @@ std::vector<fl::Variable> Node::forward(
 
 std::string Node::prettyString() const {
   return this->module_->prettyString();
-};
+}
 
 }  // namespace neurons
