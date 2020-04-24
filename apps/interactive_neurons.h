@@ -27,6 +27,11 @@ class InteractiveNeurons : public cinder::app::App {
   void AttemptLink(std::vector<adapter::NodeAdapter>& nodes,
                    std::vector<adapter::LinkAdapter>& links,
                    size_t start, size_t end);
+
+  // Handle Node deletion
+  void HandleNodeDeletion(std::vector<adapter::NodeAdapter>& nodes);
+  // Handle Link deletion
+  void HandleLinkDeletion(std::vector<adapter::LinkAdapter>& links);
 };
 
 }  // namespace neurons
