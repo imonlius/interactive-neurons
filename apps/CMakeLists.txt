@@ -11,7 +11,7 @@ ci_make_app(
     APP_NAME    cinder-interactive-neurons
     CINDER_PATH ${CINDER_PATH}
     SOURCES     ${SOURCE_LIST}
-    LIBRARIES   mylibrary
+    LIBRARIES   neurons
     BLOCKS      imnodes
 )
 
