@@ -17,9 +17,10 @@ class Network {
   // Retrieve read-only std::vector of Links.
   [[nodiscard]] std::vector<Link>& GetLinks();
 
-  // Add a Node to the network with the fl::Module.
+  // Add a Node to the network with a unique_ptr to an fl::Module.
+  // Network will take ownership of the fl::Module pointer.
   // Returns a pointer to the Node if successful. Otherwise, returns nullptr.
-  Node* AddNode(NodeType type, fl::Module&& module);
+  Node* AddNode(NodeType type, std::unique_ptr<fl::Module> module);
 
   // Add a Link to the network if the input and output form a valid Link.
   // Returns a pointer to the Link if successful. Otherwise, returns nullptr.

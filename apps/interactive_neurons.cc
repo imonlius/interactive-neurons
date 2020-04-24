@@ -14,6 +14,12 @@ namespace neurons {
 using cinder::app::KeyEvent;
 using cinder::app::MouseEvent;
 
+using neurons::adapter::NodeAdapter;
+using neurons::adapter::LinkAdapter;
+using neurons::Node;
+using neurons::Network;
+using neurons::Link;
+
 InteractiveNeurons::InteractiveNeurons() {
   network_ = Network();
 };
@@ -22,21 +28,26 @@ void InteractiveNeurons::setup() {
   ImGui::Initialize(ImGui::Options());
   imnodes::Initialize();
 
-  network_.AddNode(NodeType::Conv2D, fl::Conv2D(1, 1, 1, 1));
-  network_.AddNode(NodeType::Conv2D, fl::Conv2D(1, 1, 1, 1));
-  network_.AddNode(NodeType::Conv2D, fl::Conv2D(1, 1, 1, 1));
-  network_.AddNode(NodeType::Conv2D, fl::Conv2D(1, 1, 1, 1));
+  network_.AddNode(NodeType::Linear,
+      std::make_unique<fl::Linear>(fl::Linear(1, 1)));
+  network_.AddNode(NodeType::Conv2D,
+      std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+  network_.AddNode(NodeType::Conv2D,
+      std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+  network_.AddNode(NodeType::Conv2D,
+      std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 }
 
 void InteractiveNeurons::update() { }
 
 void InteractiveNeurons::DrawNodes(
-    const std::vector<adapter::NodeAdapter>& nodes) {
-  for (const adapter::NodeAdapter& node : nodes) {
+    const std::vector<NodeAdapter>& nodes) {
+  for (const NodeAdapter& node : nodes) {
     imnodes::BeginNode(node.id_);
 
     imnodes::BeginNodeTitleBar();
-    ImGui::TextUnformatted("Node");
+    auto test = node.node_->prettyString();
+    ImGui::TextWrapped(node.node_->prettyString().c_str());
     imnodes::EndNodeTitleBar();
 
     imnodes::BeginInputAttribute(node.input_id_);
@@ -52,19 +63,19 @@ void InteractiveNeurons::DrawNodes(
   }
 }
 
-void InteractiveNeurons::AttemptLink(std::vector<adapter::NodeAdapter>& nodes,
-    std::vector<adapter::LinkAdapter>& links, size_t start_id, size_t end_id) {
+void InteractiveNeurons::AttemptLink(std::vector<NodeAdapter>& nodes,
+    std::vector<LinkAdapter>& links, size_t start_id, size_t end_id) {
 
-  adapter::NodeAdapter* start = adapter::FindPinOwner(nodes, start_id);
-  adapter::NodeAdapter* end = adapter::FindPinOwner(nodes, end_id);
+  NodeAdapter* start = adapter::FindPinOwner(nodes, start_id);
+  NodeAdapter* end = adapter::FindPinOwner(nodes, end_id);
 
   // nullptr safety, then check that the connection is between two diff. nodes
   if (start == nullptr || end == nullptr || start == end) {
     return;
   }
 
-  adapter::NodeAdapter* input;
-  adapter::NodeAdapter* output;
+  NodeAdapter* input;
+  NodeAdapter* output;
 
   // figure out the input and the output nodes
   if (start->output_id_ == start_id && end->input_id_ == end_id) {
@@ -90,7 +101,7 @@ void InteractiveNeurons::AttemptLink(std::vector<adapter::NodeAdapter>& nodes,
 }
 
 void InteractiveNeurons::HandleLinkDeletion(
-    std::vector<adapter::LinkAdapter>& links) {
+    std::vector<LinkAdapter>& links) {
   // See if any links are selected
   const size_t num_links_selected = imnodes::NumSelectedLinks();
 
@@ -101,14 +112,14 @@ void InteractiveNeurons::HandleLinkDeletion(
     // Load selected_nodes with IDs of selected nodes
     imnodes::GetSelectedLinks(selected_links.data());
     for (const int id : selected_links) {
-      auto adapter = neurons::adapter::FindOwnerLink(links, id);
+      auto adapter = adapter::FindOwnerLink(links, id);
       network_.DeleteLink(*adapter->link_);
     }
   }
 }
 
 void InteractiveNeurons::HandleNodeDeletion(
-    std::vector<adapter::NodeAdapter>& nodes) {
+    std::vector<NodeAdapter>& nodes) {
   // See if any nodes are selected
   const size_t num_nodes_selected = imnodes::NumSelectedNodes();
 
@@ -137,7 +148,7 @@ void InteractiveNeurons::draw() {
 
   // Draw Links
   auto links = adapter::BuildLinkAdapters(network_.GetLinks());
-  for (const adapter::LinkAdapter& link : links) {
+  for (const LinkAdapter& link : links) {
     imnodes::Link(link.id_, link.output_id_, link.input_id_);
   }
 
@@ -151,6 +162,30 @@ void InteractiveNeurons::draw() {
   int end_pin;
   if (imnodes::IsLinkCreated(&start_pin, &end_pin)) {
     AttemptLink(nodes, links, start_pin, end_pin);
+  }
+
+  // If a non-node/link area is right-clicked
+  if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
+      !ImGui::IsAnyItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+    ImGui::OpenPopup("Add Node");
+  }
+
+  if (ImGui::BeginPopup("Add Node")) {
+      auto mouse_position = ImGui::GetMousePosOnOpeningCurrentPopup();
+      if (ImGui::MenuItem("Add Conv2D Node")) {
+        network_.AddNode(NodeType::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+        // set the position of the spawned node to the cursor position
+        auto adapter = NodeAdapter(network_.GetNodes().back());
+        imnodes::SetNodeScreenSpacePos(adapter.id_, mouse_position);
+      } else if (ImGui::MenuItem("Add Linear Node")) {
+        network_.AddNode(NodeType::Linear,
+            std::make_unique<fl::Linear>(fl::Linear(1, 1)));
+        // set the position of the spawned node to the cursor position
+        auto adapter = NodeAdapter(network_.GetNodes().back());
+        imnodes::SetNodeScreenSpacePos(adapter.id_, mouse_position);
+      }
+      ImGui::EndPopup();
   }
 
   ImGui::End();

@@ -18,6 +18,8 @@ bool ContainsNode(const std::vector<neurons::Node>& nodes,
 Link* Network::AddLink(neurons::Node& input,
     neurons::Node& output) {
 
+  links_.reserve(links_.size() + 1);
+
   // if Network does not have the Nodes, it cannot link them.
   if (!ContainsNode(nodes_, input) || !ContainsNode(nodes_, output)) {
     return nullptr;
@@ -30,8 +32,10 @@ Link* Network::AddLink(neurons::Node& input,
   return nullptr;
 }
 
-Node* Network::AddNode(neurons::NodeType type, fl::Module&& module) {
+Node* Network::AddNode(neurons::NodeType type,
+    std::unique_ptr<fl::Module> module) {
   // new Node takes ownership of the module_ptr
+  nodes_.reserve(nodes_.size() + 1);
   nodes_.emplace_back(unique_id_++, type, std::move(module));
   return &nodes_.back();
 }

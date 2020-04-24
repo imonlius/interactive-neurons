@@ -22,8 +22,7 @@ class Node {
   [[nodiscard]] NodeType GetNodeType() const;
 
   // Node Constructor
-  Node(size_t id, NodeType type, fl::Module&& module) :
-      id_(id), type_(type), module_(&module) {}
+  Node(size_t id, NodeType type, std::unique_ptr<fl::Module> module);
 
   // Wrapper methods that will be called on the wrapped fl::Module.
   [[nodiscard]] std::vector<fl::Variable> params() const;
@@ -40,8 +39,8 @@ class Node {
   size_t id_;
   NodeType type_;
 
-  // Wrapped fl::Module
-  fl::Module* module_;
+  // Unique pointer ensures that Node has sole ownership over module
+  std::unique_ptr<fl::Module> module_;
 };
 
 }  // namespace neurons

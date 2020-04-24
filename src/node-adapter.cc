@@ -16,6 +16,7 @@ NodeAdapter::NodeAdapter(Node& node) {
 
 std::vector<NodeAdapter> BuildNodeAdapters(std::vector<Node>& nodes) {
   auto adapters = std::vector<NodeAdapter>();
+  adapters.reserve(nodes.size());
   for (auto& node : nodes) {
     adapters.emplace_back(node);
   }

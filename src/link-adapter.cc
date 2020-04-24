@@ -19,6 +19,7 @@ LinkAdapter::LinkAdapter(Link& link) {
 
 std::vector<LinkAdapter> BuildLinkAdapters(std::vector<Link>& links) {
   auto adapters = std::vector<LinkAdapter>();
+  adapters.reserve(links.size());
   for (auto& link : links) {
     adapters.emplace_back(link);
   }
