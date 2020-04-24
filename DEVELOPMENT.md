@@ -11,3 +11,6 @@
 2020-04-21: Implemented Adapter classes (NodeAdapter, LinkAdapter) 
 for imgui to interface with neuron Network. Included example code from
 imgui-node-editor for demonstration.
+
+2020-04-23: Switched graph library from imgui-node-editor to imnodes. Implemented
+node/link adding and deleting. Fixed memory management of flashlight modules in Nodes.
