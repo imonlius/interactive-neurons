@@ -22,20 +22,12 @@ using neurons::Link;
 
 InteractiveNeurons::InteractiveNeurons() {
   network_ = Network();
+  freeze_editor_ = false;
 }
 
 void InteractiveNeurons::setup() {
   ImGui::Initialize(ImGui::Options());
   imnodes::Initialize();
-
-  network_.AddNode(NodeType::Linear,
-      std::make_unique<fl::Linear>(fl::Linear(1, 1)));
-  network_.AddNode(NodeType::Conv2D,
-      std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
-  network_.AddNode(NodeType::Conv2D,
-      std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
-  network_.AddNode(NodeType::Conv2D,
-      std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 }
 
 void InteractiveNeurons::update() { }
@@ -55,7 +47,7 @@ void InteractiveNeurons::DrawNodes(
     imnodes::EndAttribute();
 
     imnodes::BeginOutputAttribute(node.output_id_);
-    ImGui::Indent(40);
+    ImGui::Indent(50);
     ImGui::Text("Output");
     imnodes::EndAttribute();
 
@@ -136,6 +128,134 @@ void InteractiveNeurons::HandleNodeDeletion(
   }
 }
 
+void InteractiveNeurons::HandleNodeCreation() {
+  // If a non-node/link area is right-clicked
+  if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
+      !ImGui::IsAnyItemHovered() &&
+      ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
+    ImGui::OpenPopup("Add Node");
+  }
+
+  static ImVec2 mouse_position;
+
+  // add_node will be filled with the NodeType to be added if desired
+  NodeType add_node = NodeType::Dummy;
+  if (ImGui::BeginPopup("Add Node")) {
+    // record mouse position on right click
+    mouse_position = ImGui::GetMousePosOnOpeningCurrentPopup();
+
+    if (ImGui::MenuItem("Add Conv2D Node")) {
+      add_node = NodeType::Conv2D;
+    }
+    if (ImGui::MenuItem("Add Linear Node")) {
+      add_node = NodeType::Linear;
+    }
+
+    ImGui::EndPopup();
+  }
+
+  // open pop-up based on desired node type to be added
+  switch(add_node) {
+    case NodeType::Conv2D:
+      ImGui::OpenPopup("Add Conv2D");
+      freeze_editor_ = true;
+      break;
+    case NodeType::Linear:
+      ImGui::OpenPopup("Add Linear");
+      freeze_editor_ = true;
+      break;
+    default:
+      break;
+  }
+
+  bool node_created = false;
+
+  if (ImGui::BeginPopupModal("Add Conv2D")) {
+      static int n_args[10]; // must be static to be preserved between draws
+    static bool bias;
+    const std::string labels[] = {"Input Channels", "Output Channels",
+                                  "Kernel X-dim Size", "Kernel Y-dim Size",
+                                  "Conv X-dim Stride", "Conv Y-dim Stride",
+                                  "Zero-Padding X-dim", "Zero-Padding Y-dim",
+                                  "Conv X-dim Dilation", "Conv Y-Dim Dilation"};
+    for (size_t i = 0; i < 10; ++i) {
+      ImGui::Text("%s", labels[i].c_str());
+      std::string label = "##" + labels[i]; // ## makes invis. label
+      ImGui::InputInt(label.c_str(), &n_args[i]);
+    }
+
+    ImGui::Checkbox("Learnable Bias: ", &bias);
+
+    if (ImGui::Button("Cancel")) {
+      freeze_editor_ = false;
+      ImGui::CloseCurrentPopup();
+    }
+
+    if (ImGui::Button("Add Node")) {
+
+      // Check that arguments are valid
+      bool args_valid = true;
+      for (size_t i = 0; i < 10; ++i) {
+        // zero-padding can be zero+, everything else must be positive.
+        if (!(n_args[i] > 0 || ((i == 6 || i == 7) && n_args[i] == 0))) {
+          args_valid = false;
+        }
+      }
+
+      if (args_valid) {
+        network_.AddNode(NodeType::Conv2D,std::make_unique<fl::Conv2D>(
+            fl::Conv2D(n_args[0], n_args[1], n_args[2],
+                       n_args[3],n_args[4], n_args[5], n_args[6],
+                       n_args[7], n_args[8],n_args[9], bias)));
+        node_created = true;
+        ImGui::CloseCurrentPopup();
+      }
+    }
+    ImGui::EndPopup();
+  }
+
+  if (ImGui::BeginPopupModal("Add Linear")) {
+    static int n_args[2]; // must be static to be preserved between draws
+    static bool bias;
+    const std::string labels[] = {"Input Size", "Output Size"};
+    for (size_t i = 0; i < 2; ++i) {
+      ImGui::Text("%s", labels[i].c_str());
+      std::string label = "##" + labels[i]; // ## makes invis. label
+      ImGui::InputInt(label.c_str(), &n_args[i]);
+    }
+
+    ImGui::Checkbox("Learnable Bias: ", &bias);
+
+    if (ImGui::Button("Cancel")) {
+      freeze_editor_ = false;
+      ImGui::CloseCurrentPopup();
+    }
+
+    if (ImGui::Button("Add Node")) {
+      // Check that arguments are valid
+      bool args_valid = (n_args[0] > 0 && n_args[1] > 0);
+
+      if (args_valid) {
+        network_.AddNode(NodeType::Linear,std::make_unique<fl::Linear>(
+            fl::Linear(n_args[0], n_args[1], bias)));
+
+        node_created = true;
+        ImGui::CloseCurrentPopup();
+      }
+    }
+    ImGui::EndPopup();
+  }
+
+  if (node_created) {
+    // set the position of the spawned node to the cursor position
+    auto adapter = NodeAdapter(network_.GetNodes().back());
+    imnodes::SetNodeScreenSpacePos(adapter.id_, mouse_position);
+
+    // unfreeze the editor to allow graph editing
+    freeze_editor_ = false;
+  }
+}
+
 void InteractiveNeurons::draw() {
   cinder::gl::clear(cinder:: Color( 0, 0, 0 ) );
 
@@ -152,46 +272,29 @@ void InteractiveNeurons::draw() {
     imnodes::Link(link.id_, link.output_id_, link.input_id_);
   }
 
+  HandleNodeCreation();
   imnodes::EndNodeEditor();
 
-  HandleNodeDeletion(nodes);
-  HandleLinkDeletion(links);
+  if (!freeze_editor_) {
+    HandleNodeDeletion(nodes);
+    HandleLinkDeletion(links);
 
-  // See if any links were drawn
-  int start_pin;
-  int end_pin;
-  if (imnodes::IsLinkCreated(&start_pin, &end_pin)) {
-    AttemptLink(nodes, links, start_pin, end_pin);
-  }
-
-  // If a non-node/link area is right-clicked
-  if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
-      !ImGui::IsAnyItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right)) {
-    ImGui::OpenPopup("Add Node");
-  }
-
-  if (ImGui::BeginPopup("Add Node")) {
-      auto mouse_position = ImGui::GetMousePosOnOpeningCurrentPopup();
-      // TODO: Implement a window for new Node configuration
-      if (ImGui::MenuItem("Add Conv2D Node")) {
-        network_.AddNode(NodeType::Conv2D,
-            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
-        // set the position of the spawned node to the cursor position
-        auto adapter = NodeAdapter(network_.GetNodes().back());
-        imnodes::SetNodeScreenSpacePos(adapter.id_, mouse_position);
-      } else if (ImGui::MenuItem("Add Linear Node")) {
-        network_.AddNode(NodeType::Linear,
-            std::make_unique<fl::Linear>(fl::Linear(1, 1)));
-        // set the position of the spawned node to the cursor position
-        auto adapter = NodeAdapter(network_.GetNodes().back());
-        imnodes::SetNodeScreenSpacePos(adapter.id_, mouse_position);
-      }
-      ImGui::EndPopup();
+    // See if any links were drawn
+    int start_pin;
+    int end_pin;
+    if (imnodes::IsLinkCreated(&start_pin, &end_pin)) {
+      AttemptLink(nodes, links, start_pin, end_pin);
+    }
   }
 
   ImGui::End();
 }
 
 void InteractiveNeurons::keyDown(KeyEvent event) { }
+
+void InteractiveNeurons::quit() {
+  imnodes::Shutdown();
+  ImGui::DestroyContext();
+}
 
 }  // namespace neurons

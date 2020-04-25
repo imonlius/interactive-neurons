@@ -17,9 +17,11 @@ class InteractiveNeurons : public cinder::app::App {
   void update() override;
   void draw() override;
   void keyDown(cinder::app::KeyEvent) override;
+  void quit() override;
 
  private:
   Network network_;
+  bool freeze_editor_;
 
   // Draw all the nodes on the imgui-node-editor NodeEditor.
   void DrawNodes(const std::vector<adapter::NodeAdapter>& nodes);
@@ -32,6 +34,8 @@ class InteractiveNeurons : public cinder::app::App {
   void HandleNodeDeletion(std::vector<adapter::NodeAdapter>& nodes);
   // Handle Link deletion
   void HandleLinkDeletion(std::vector<adapter::LinkAdapter>& links);
+  // Handle node creation
+  void HandleNodeCreation();
 };
 
 }  // namespace neurons

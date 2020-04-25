@@ -7,6 +7,7 @@
 namespace neurons {
 
 enum NodeType {
+  Dummy,
   Conv2D,
   Linear
 };
