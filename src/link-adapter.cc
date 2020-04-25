@@ -4,9 +4,7 @@
 
 #include "imgui_adapter/node-adapter.h"
 
-namespace neurons {
-
-namespace adapter {
+namespace neurons::adapter {
 
 LinkAdapter::LinkAdapter(Link& link) {
   link_ = &link;
@@ -35,6 +33,4 @@ LinkAdapter* FindOwnerLink(std::vector<LinkAdapter>& links, size_t id) {
   return nullptr;
 }
 
-}  // namespace adapter
-
-}  // namespace neurons
+}  // namespace neurons::adapter

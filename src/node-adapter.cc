@@ -2,9 +2,7 @@
 
 #include "imgui_adapter/node-adapter.h"
 
-namespace neurons {
-
-namespace adapter {
+namespace neurons::adapter {
 
 NodeAdapter::NodeAdapter(Node& node) {
   node_ = &node;
@@ -41,6 +39,4 @@ NodeAdapter* FindPinOwner(std::vector<NodeAdapter>& nodes, size_t id) {
   return nullptr;
 }
 
-}  // namespace adapter
-
-}  // namespace neurons
+}  // namespace neurons::adapter

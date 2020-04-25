@@ -5,9 +5,7 @@
 
 #include "neurons/link.h"
 
-namespace neurons {
-
-namespace adapter {
+namespace neurons::adapter {
 
 // Adapter between a graph link and a neuron Link
 // Graph link relies on pins
@@ -30,8 +28,6 @@ std::vector<LinkAdapter> BuildLinkAdapters(std::vector<Link>& links);
 // Returns nullptr if none of the Pins match the criteria.
 LinkAdapter* FindOwnerLink(std::vector<LinkAdapter>& links, size_t id);
 
-}  // namespace adapter
-
-}  // namespace neurons
+}  // namespace neurons::adapter
 
 #endif  // FINALPROJECT_IMGUI_ADAPTER_LINK_ADAPTER_H

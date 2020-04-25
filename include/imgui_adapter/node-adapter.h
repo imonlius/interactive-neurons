@@ -5,9 +5,7 @@
 
 #include "neurons/node.h"
 
-namespace neurons {
-
-namespace adapter {
+namespace neurons::adapter {
 
 // Each NodeAdapter requires three unique IDs: NodeId, input PinId, output PinId
 // To create a bijection from Link IDs and Node IDs to Adapter IDs:
@@ -40,8 +38,6 @@ NodeAdapter* FindOwnerNode(std::vector<NodeAdapter>& nodes, size_t id);
 // Returns nullptr if none of the Nodes match the criteria.
 NodeAdapter* FindPinOwner(std::vector<NodeAdapter>& nodes, size_t id);
 
-}  // namespace adapter
-
-}  // namespace neurons
+}  // namespace neurons::adapter
 
 #endif  // FINALPROJECT_IMGUI_ADAPTER_ADAPTER_H

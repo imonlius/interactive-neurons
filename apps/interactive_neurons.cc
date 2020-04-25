@@ -32,8 +32,8 @@ void InteractiveNeurons::setup() {
 
 void InteractiveNeurons::update() { }
 
-void InteractiveNeurons::DrawNodes(
-    const std::vector<NodeAdapter>& nodes) {
+// Draw all the nodes on the imnodes NodeEditor.
+void DrawNodes(const std::vector<NodeAdapter>& nodes) {
   for (const NodeAdapter& node : nodes) {
     imnodes::BeginNode(node.id_);
 
@@ -55,8 +55,10 @@ void InteractiveNeurons::DrawNodes(
   }
 }
 
-void InteractiveNeurons::AttemptLink(std::vector<NodeAdapter>& nodes,
-    std::vector<LinkAdapter>& links, size_t start_id, size_t end_id) {
+// Attempt to create a link between Nodes on the Network.
+void AttemptLink(std::vector<NodeAdapter>& nodes,
+    std::vector<LinkAdapter>& links, Network& network,
+    size_t start_id, size_t end_id) {
 
   NodeAdapter* start = adapter::FindPinOwner(nodes, start_id);
   NodeAdapter* end = adapter::FindPinOwner(nodes, end_id);
@@ -89,11 +91,11 @@ void InteractiveNeurons::AttemptLink(std::vector<NodeAdapter>& nodes,
     return;
   }
 
-  links.emplace_back(*network_.AddLink(*input->node_, *output->node_));
+  links.emplace_back(*network.AddLink(*input->node_, *output->node_));
 }
 
-void InteractiveNeurons::HandleLinkDeletion(
-    std::vector<LinkAdapter>& links) {
+// Handle Link deletion
+void HandleLinkDeletion(std::vector<LinkAdapter>& links, Network& network) {
   // See if any links are selected
   const size_t num_links_selected = imnodes::NumSelectedLinks();
 
@@ -103,15 +105,21 @@ void InteractiveNeurons::HandleLinkDeletion(
     selected_links.resize(num_links_selected);
     // Load selected_nodes with IDs of selected nodes
     imnodes::GetSelectedLinks(selected_links.data());
-    for (const int id : selected_links) {
-      auto adapter = adapter::FindOwnerLink(links, id);
-      network_.DeleteLink(*adapter->link_);
+    while(!selected_links.empty()) {
+      auto adapter = neurons::adapter::FindOwnerLink(links,
+          selected_links.back());
+      // could occur if user selects node and then presses delete twice
+      if (adapter == nullptr) {
+        continue;
+      }
+      network.DeleteLink(*adapter->link_);
+      selected_links.pop_back();
     }
   }
 }
 
-void InteractiveNeurons::HandleNodeDeletion(
-    std::vector<NodeAdapter>& nodes) {
+// Handle Node deletion
+void HandleNodeDeletion(std::vector<NodeAdapter>& nodes, Network& network) {
   // See if any nodes are selected
   const size_t num_nodes_selected = imnodes::NumSelectedNodes();
 
@@ -121,14 +129,21 @@ void InteractiveNeurons::HandleNodeDeletion(
     selected_nodes.resize(num_nodes_selected);
     // Load selected_nodes with IDs of selected nodes
     imnodes::GetSelectedNodes(selected_nodes.data());
-    for (const int id : selected_nodes) {
-      auto adapter = neurons::adapter::FindOwnerNode(nodes, id);
-      network_.DeleteNode(*adapter->node_);
+    while(!selected_nodes.empty()) {
+      auto adapter = neurons::adapter::FindOwnerNode(nodes,
+          selected_nodes.back());
+      // could occur if user selects node and then presses delete twice
+      if (adapter == nullptr) {
+        continue;
+      }
+      network.DeleteNode(*adapter->node_);
+      selected_nodes.pop_back();
     }
   }
 }
 
-void InteractiveNeurons::HandleNodeCreation() {
+// Handle node creation
+void HandleNodeCreation(Network& network, bool& freeze_editor) {
   // If a non-node/link area is right-clicked
   if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
       !ImGui::IsAnyItemHovered() &&
@@ -153,9 +168,9 @@ void InteractiveNeurons::HandleNodeCreation() {
       const std::vector<ActivationNodeType> activations =
           {Sigmoid, Tanh, HardTanh, ReLU, LeakyReLU, ELU,
            ThresholdReLU, GatedLinearUnit, LogSoftmax, Log};
-      for (size_t i = 0; i < activations.size(); ++i) {
-        if (ImGui::MenuItem(NodeTypeToString(activations.at(i)).c_str())) {
-          network_.AddNode(Activation, SpawnActivation(activations.at(i)));
+      for (auto activation : activations) {
+        if (ImGui::MenuItem(NodeTypeToString(activation).c_str())) {
+          network.AddNode(Activation, SpawnActivation(activation));
           node_created = true;
         }
       }
@@ -177,11 +192,11 @@ void InteractiveNeurons::HandleNodeCreation() {
   switch(add_node) {
     case NodeType::Conv2D:
       ImGui::OpenPopup("Add Conv2D");
-      freeze_editor_ = true;
+      freeze_editor = true;
       break;
     case NodeType::Linear:
       ImGui::OpenPopup("Add Linear");
-      freeze_editor_ = true;
+      freeze_editor = true;
       break;
     default:
       break;
@@ -204,7 +219,7 @@ void InteractiveNeurons::HandleNodeCreation() {
     ImGui::Checkbox("Learnable Bias: ", &bias);
 
     if (ImGui::Button("Cancel")) {
-      freeze_editor_ = false;
+      freeze_editor = false;
       ImGui::CloseCurrentPopup();
     }
 
@@ -220,7 +235,7 @@ void InteractiveNeurons::HandleNodeCreation() {
       }
 
       if (args_valid) {
-        network_.AddNode(NodeType::Conv2D,std::make_unique<fl::Conv2D>(
+        network.AddNode(NodeType::Conv2D,std::make_unique<fl::Conv2D>(
             fl::Conv2D(n_args[0], n_args[1], n_args[2],
                        n_args[3],n_args[4], n_args[5], n_args[6],
                        n_args[7], n_args[8],n_args[9], bias)));
@@ -244,7 +259,7 @@ void InteractiveNeurons::HandleNodeCreation() {
     ImGui::Checkbox("Learnable Bias: ", &bias);
 
     if (ImGui::Button("Cancel")) {
-      freeze_editor_ = false;
+      freeze_editor = false;
       ImGui::CloseCurrentPopup();
     }
 
@@ -253,7 +268,7 @@ void InteractiveNeurons::HandleNodeCreation() {
       bool args_valid = (n_args[0] > 0 && n_args[1] > 0);
 
       if (args_valid) {
-        network_.AddNode(NodeType::Linear,std::make_unique<fl::Linear>(
+        network.AddNode(NodeType::Linear,std::make_unique<fl::Linear>(
             fl::Linear(n_args[0], n_args[1], bias)));
 
         node_created = true;
@@ -265,11 +280,11 @@ void InteractiveNeurons::HandleNodeCreation() {
 
   if (node_created) {
     // set the position of the spawned node to the cursor position
-    auto adapter = NodeAdapter(network_.GetNodes().back());
+    auto adapter = NodeAdapter(network.GetNodes().back());
     imnodes::SetNodeScreenSpacePos(adapter.id_, mouse_position);
 
     // unfreeze the editor to allow graph editing
-    freeze_editor_ = false;
+    freeze_editor = false;
   }
 }
 
@@ -289,18 +304,18 @@ void InteractiveNeurons::draw() {
     imnodes::Link(link.id_, link.output_id_, link.input_id_);
   }
 
-  HandleNodeCreation();
+  HandleNodeCreation(network_, freeze_editor_);
   imnodes::EndNodeEditor();
 
   if (!freeze_editor_) {
-    HandleNodeDeletion(nodes);
-    HandleLinkDeletion(links);
+    HandleNodeDeletion(nodes, network_);
+    HandleLinkDeletion(links, network_);
 
     // See if any links were drawn
     int start_pin;
     int end_pin;
     if (imnodes::IsLinkCreated(&start_pin, &end_pin)) {
-      AttemptLink(nodes, links, start_pin, end_pin);
+      AttemptLink(nodes, links, network_, start_pin, end_pin);
     }
   }
 

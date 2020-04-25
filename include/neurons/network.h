@@ -27,11 +27,9 @@ class Network {
   Link* AddLink(Node& input, Node& output);
 
   // Delete a Link from the network.
-  // Returns whether successful.
   void DeleteLink(const Link& link);
 
   // Delete a Node from the network.
-  // Returns whether successful.
   void DeleteNode(const Node& node);
 
  private:

@@ -22,20 +22,6 @@ class InteractiveNeurons : public cinder::app::App {
  private:
   Network network_;
   bool freeze_editor_;
-
-  // Draw all the nodes on the imgui-node-editor NodeEditor.
-  void DrawNodes(const std::vector<adapter::NodeAdapter>& nodes);
-  // Attempt to create a link between Nodes on the Network.
-  void AttemptLink(std::vector<adapter::NodeAdapter>& nodes,
-                   std::vector<adapter::LinkAdapter>& links,
-                   size_t start, size_t end);
-
-  // Handle Node deletion
-  void HandleNodeDeletion(std::vector<adapter::NodeAdapter>& nodes);
-  // Handle Link deletion
-  void HandleLinkDeletion(std::vector<adapter::LinkAdapter>& links);
-  // Handle node creation
-  void HandleNodeCreation();
 };
 
 }  // namespace neurons

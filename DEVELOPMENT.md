@@ -14,3 +14,5 @@ imgui-node-editor for demonstration.
 
 2020-04-23: Switched graph library from imgui-node-editor to imnodes. Implemented
 node/link adding and deleting. Fixed memory management of flashlight modules in Nodes.
+
+2020-04-24: Implemented node adding configuration and activation function nodes.
