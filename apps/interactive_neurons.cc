@@ -138,12 +138,31 @@ void InteractiveNeurons::HandleNodeCreation() {
 
   static ImVec2 mouse_position;
 
+  bool node_created = false;
+
+
   // add_node will be filled with the NodeType to be added if desired
   NodeType add_node = NodeType::Dummy;
   if (ImGui::BeginPopup("Add Node")) {
     // record mouse position on right click
     mouse_position = ImGui::GetMousePosOnOpeningCurrentPopup();
 
+    if (ImGui::BeginMenu("Activations")) {
+      // Activation nodes require no parameters, so we can spawn it here
+      // without any additional pop up menus
+      const std::vector<ActivationNodeType> activations =
+          {Sigmoid, Tanh, HardTanh, ReLU, LeakyReLU, ELU,
+           ThresholdReLU, GatedLinearUnit, LogSoftmax, Log};
+      for (size_t i = 0; i < activations.size(); ++i) {
+        if (ImGui::MenuItem(NodeTypeToString(activations.at(i)).c_str())) {
+          network_.AddNode(Activation, SpawnActivation(activations.at(i)));
+          node_created = true;
+        }
+      }
+      ImGui::EndMenu();
+    }
+
+    // These nodes require parameters, so pop up a window for config
     if (ImGui::MenuItem("Add Conv2D Node")) {
       add_node = NodeType::Conv2D;
     }
@@ -167,8 +186,6 @@ void InteractiveNeurons::HandleNodeCreation() {
     default:
       break;
   }
-
-  bool node_created = false;
 
   if (ImGui::BeginPopupModal("Add Conv2D")) {
       static int n_args[10]; // must be static to be preserved between draws
