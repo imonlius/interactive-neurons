@@ -11,11 +11,11 @@ class Network {
 
  public:
 
-  // Retrieve read-only std::vector of Nodes.
-  [[nodiscard]] std::vector<Node>& GetNodes();
+  // Retrieve read-only std::deque of Nodes.
+  [[nodiscard]] std::deque<Node>& GetNodes();
 
-  // Retrieve read-only std::vector of Links.
-  [[nodiscard]] std::vector<Link>& GetLinks();
+  // Retrieve read-only std::deque of Links.
+  [[nodiscard]] std::deque<Link>& GetLinks();
 
   // Add a Node to the network with a unique_ptr to an fl::Module.
   // Network will take ownership of the fl::Module pointer.
@@ -37,11 +37,11 @@ class Network {
   // Keep track of next unique ID for Nodes/Links.
   size_t unique_id_;
 
-  // Vector of all the Nodes in the network.
-  std::vector<Node> nodes_;
+  // Deque of all the Nodes in the network.
+  std::deque<Node> nodes_;
 
-  // Vector of all the Links in the network.
-  std::vector<Link> links_;
+  // Deque of all the Links in the network.
+  std::deque<Link> links_;
 
 };
 

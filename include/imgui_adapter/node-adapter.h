@@ -26,7 +26,7 @@ struct NodeAdapter {
 
 
 // Return a vector of NodeAdapters wrapped around the passed nodes
-std::vector<NodeAdapter> BuildNodeAdapters(std::vector<Node>& nodes);
+std::vector<NodeAdapter> BuildNodeAdapters(std::deque<Node>& nodes);
 
 // Returns a pointer to a Node in the passed vector that owns the node ID.
 // If multiple nodes have the node ID, will return the first one.

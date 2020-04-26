@@ -26,13 +26,13 @@ TEST_CASE("NodeAdapter: Constructor", "[NodeAdapter][Constructor]") {
 }
 
 /*
- * std::vector<NodeAdapter> BuildNodeAdapters(std::vector<Node>& nodes)
+ * std::vector<NodeAdapter> BuildNodeAdapters(std::deque<Node>& nodes)
  */
 
 TEST_CASE("NodeAdapter: BuildNodeAdapters",
     "[NodeAdapter][BuildNodeAdapters]") {
 
-  std::vector<neurons::Node> nodes;
+  std::deque<neurons::Node> nodes;
 
   SECTION("Empty vector") {
     REQUIRE(neurons::adapter::BuildNodeAdapters(nodes).empty());
@@ -84,7 +84,7 @@ TEST_CASE("NodeAdapter: FindPinOwner", "[NodeAdapter][FindPinOwner]") {
   auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
   auto module_two = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
 
-  std::vector<neurons::Node> nodes;
+  std::deque<neurons::Node> nodes;
   nodes.emplace_back(node_id, neurons::NodeType::Conv2D,
                      std::make_unique<fl::Conv2D>(module));
   nodes.emplace_back(node_id_two, neurons::NodeType::Conv2D,
@@ -120,7 +120,7 @@ TEST_CASE("NodeAdapter: FindOwnerNode", "[NodeAdapter][FindOwnerNode]") {
   auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
   auto module_two = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
 
-  std::vector<neurons::Node> nodes;
+  std::deque<neurons::Node> nodes;
   nodes.emplace_back(node_id, neurons::NodeType::Conv2D,
                      std::make_unique<fl::Conv2D>(module));
   nodes.emplace_back(node_id_two, neurons::NodeType::Conv2D,

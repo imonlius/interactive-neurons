@@ -37,14 +37,14 @@ TEST_CASE("LinkAdapter: Constructor", "[LinkAdapter][Constructor]") {
 }
 
 /*
- * std::vector<LinkAdapter> BuildLinkAdapters(std::vector<Link>& links);
+ * std::vector<LinkAdapter> BuildLinkAdapters(std::deque<Link>& links);
  */
 
 TEST_CASE("LinkAdapter: BuildLinkAdapters",
     "[LinkAdapter][BuildLinkAdapters]") {
 
   SECTION("No Links") {
-    std::vector<neurons::Link> links;
+    std::deque<neurons::Link> links;
     REQUIRE(neurons::adapter::BuildLinkAdapters(links).empty());
   }
 
@@ -65,7 +65,7 @@ TEST_CASE("LinkAdapter: BuildLinkAdapters",
     auto link_reverse = neurons::Link::BuildLink(
         reverse_link_id, output_node, input_node);
 
-    std::vector<neurons::Link> links = {link, link_reverse};
+    std::deque<neurons::Link> links = {link, link_reverse};
     auto link_adapters = neurons::adapter::BuildLinkAdapters(links);
     REQUIRE(link_adapters.size() == 2);
 
@@ -111,7 +111,7 @@ TEST_CASE("LinkAdapter: FindOwnerLink", "[LinkAdapter][FindOwnerLink]") {
   auto link_reverse = neurons::Link::BuildLink(reverse_link_id,
       output_node, input_node);
 
-  std::vector<neurons::Link> links = {link, link_reverse};
+  std::deque<neurons::Link> links = {link, link_reverse};
   auto link_adapters = neurons::adapter::BuildLinkAdapters(links);
 
   SECTION("Link is present") {

@@ -15,7 +15,7 @@ LinkAdapter::LinkAdapter(Link& link) {
   input_id_ = kIdMultiplier * link.input_->GetId() + 1;
 }
 
-std::vector<LinkAdapter> BuildLinkAdapters(std::vector<Link>& links) {
+std::vector<LinkAdapter> BuildLinkAdapters(std::deque<Link>& links) {
   auto adapters = std::vector<LinkAdapter>();
   adapters.reserve(links.size());
   for (auto& link : links) {

@@ -21,7 +21,7 @@ struct LinkAdapter {
 };
 
 // Return a vector of LinkAdapters wrapped around the passed links
-std::vector<LinkAdapter> BuildLinkAdapters(std::vector<Link>& links);
+std::vector<LinkAdapter> BuildLinkAdapters(std::deque<Link>& links);
 
 // Returns a pointer to the Link in the passed vector with the passed link ID.
 // If multiple Links have the same link ID, will return the first one.

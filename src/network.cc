@@ -4,8 +4,8 @@
 
 namespace neurons {
 
-// Helper function, returns whether the vector contains the Node
-bool ContainsNode(const std::vector<neurons::Node>& nodes,
+// Helper function, returns whether the deque contains the Node
+bool ContainsNode(const std::deque<neurons::Node>& nodes,
     const neurons::Node& node) {
   for (auto& it : nodes) {
     if(&it == &node) {
@@ -17,8 +17,6 @@ bool ContainsNode(const std::vector<neurons::Node>& nodes,
 
 Link* Network::AddLink(neurons::Node& input,
     neurons::Node& output) {
-
-  links_.reserve(links_.size() + 1);
 
   // if Network does not have the Nodes, it cannot link them.
   if (!ContainsNode(nodes_, input) || !ContainsNode(nodes_, output)) {
@@ -35,7 +33,6 @@ Link* Network::AddLink(neurons::Node& input,
 Node* Network::AddNode(neurons::NodeType type,
     std::unique_ptr<fl::Module> module) {
   // new Node takes ownership of the module_ptr
-  nodes_.reserve(nodes_.size() + 1);
   nodes_.emplace_back(unique_id_++, type, std::move(module));
   return &nodes_.back();
 }
@@ -73,11 +70,11 @@ void Network::DeleteNode(const neurons::Node& node) {
 
 }
 
-std::vector<Link>& Network::GetLinks() {
+std::deque<Link>& Network::GetLinks() {
   return links_;
 }
 
-std::vector<Node>& Network::GetNodes() {
+std::deque<Node>& Network::GetNodes() {
   return nodes_;
 }
 
