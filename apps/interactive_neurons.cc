@@ -133,11 +133,11 @@ void HandleNodeDeletion(std::vector<NodeAdapter>& nodes, Network& network) {
       auto adapter = neurons::adapter::FindOwnerNode(nodes,
           selected_nodes.back());
       // could occur if user selects node and then presses delete twice
+      selected_nodes.pop_back();
       if (adapter == nullptr) {
         continue;
       }
       network.DeleteNode(*adapter->node_);
-      selected_nodes.pop_back();
     }
   }
 }
@@ -155,7 +155,6 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
 
   bool node_created = false;
 
-
   // add_node will be filled with the NodeType to be added if desired
   NodeType add_node = NodeType::Dummy;
   if (ImGui::BeginPopup("Add Node")) {
@@ -165,14 +164,57 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
     if (ImGui::BeginMenu("Activations")) {
       // Activation nodes require no parameters, so we can spawn it here
       // without any additional pop up menus
-      const std::vector<ActivationNodeType> activations =
+      const std::vector<NodeType> activations =
           {Sigmoid, Tanh, HardTanh, ReLU, LeakyReLU, ELU,
            ThresholdReLU, GatedLinearUnit, LogSoftmax, Log};
+      NodeType spawn_type = Dummy;
       for (auto activation : activations) {
         if (ImGui::MenuItem(NodeTypeToString(activation).c_str())) {
-          network.AddNode(Activation, SpawnActivation(activation));
-          node_created = true;
+          spawn_type = activation;
         }
+      }
+      std::unique_ptr<fl::Module> module;
+      switch (spawn_type) {
+        case Sigmoid:
+          module = std::make_unique<fl::Sigmoid>(fl::Sigmoid());
+          break;
+        case Tanh:
+          module = std::make_unique<fl::Tanh>(fl::Tanh());
+          break;
+        case HardTanh:
+          module = std::make_unique<fl::HardTanh>(fl::HardTanh());
+          break;
+        case ReLU:
+          module = std::make_unique<fl::ReLU>(fl::ReLU());
+          break;
+        case LeakyReLU:
+          module = std::make_unique<fl::LeakyReLU>(fl::LeakyReLU());
+          break;
+        case ELU:
+          module = std::make_unique<fl::ELU>(fl::ELU());
+          break;
+        case ThresholdReLU:
+          module = std::make_unique<fl::ThresholdReLU>(fl::ThresholdReLU());
+          break;
+        case GatedLinearUnit:
+          module = std::make_unique<fl::GatedLinearUnit>(fl::GatedLinearUnit());
+          break;
+        case LogSoftmax:
+          module = std::make_unique<fl::LogSoftmax>(fl::LogSoftmax());
+          break;
+        case Log:
+          module = std::make_unique<fl::Log>(fl::Log());
+          break;
+        case Dummy:
+          // if no activation node is selected
+          break;
+        default:
+          throw std::runtime_error("Unexpected activation type.");
+      }
+      if (module) {
+        // if module has been created
+        network.AddNode(spawn_type, std::move(module));
+        node_created = true;
       }
       ImGui::EndMenu();
     }

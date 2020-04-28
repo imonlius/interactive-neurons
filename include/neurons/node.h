@@ -7,22 +7,13 @@
 namespace neurons {
 
 enum NodeType {
-  Dummy, Conv2D, Linear, Activation
-};
-
-enum ActivationNodeType {
+  Dummy, Conv2D, Linear,
   Sigmoid, Tanh, HardTanh, ReLU, LeakyReLU,
   ELU, ThresholdReLU, GatedLinearUnit, LogSoftmax, Log
 };
 
 // Get the NodeType as an std::string
 std::string NodeTypeToString(NodeType type);
-
-// Get the NodeType as an std::string
-std::string NodeTypeToString(ActivationNodeType type);
-
-// Spawn a fl::Module with an activation layer Module
-std::unique_ptr<fl::Module> SpawnActivation(ActivationNodeType type);
 
 class Node {
 

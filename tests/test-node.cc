@@ -39,104 +39,44 @@ TEST_CASE("NodeTypeToString", "[NodeTypeToString][NodeType]") {
   SECTION("Linear") {
     REQUIRE(neurons::NodeTypeToString(neurons::NodeType::Linear) == "Linear");
   }
-  SECTION("Activation") {
-    REQUIRE(neurons::NodeTypeToString(neurons::NodeType::Activation) ==
-            "Activation");
-  }
-}
-
-/*
- * NodeTypeToString(ActivationNodeType type)
- */
-TEST_CASE("NodeTypeToString: Activation", "[NodeTypeToString][ActivationNodeType]") {
   SECTION("Sigmoid") {
     REQUIRE(neurons::NodeTypeToString(
-        neurons::ActivationNodeType::Sigmoid) == "Sigmoid");
+        neurons::NodeType::Sigmoid) == "Sigmoid");
   }
   SECTION("Tanh") {
     REQUIRE(neurons::NodeTypeToString(
-        neurons::ActivationNodeType::Tanh) == "Tanh");
+        neurons::NodeType::Tanh) == "Tanh");
   }
   SECTION("HardTanh") {
     REQUIRE(neurons::NodeTypeToString(
-        neurons::ActivationNodeType::HardTanh) == "HardTanh");
+        neurons::NodeType::HardTanh) == "HardTanh");
   }
   SECTION("ReLU") {
     REQUIRE(neurons::NodeTypeToString(
-        neurons::ActivationNodeType::ReLU) == "ReLU");
+        neurons::NodeType::ReLU) == "ReLU");
   }
   SECTION("LeakyReLU") {
     REQUIRE(neurons::NodeTypeToString(
-        neurons::ActivationNodeType::LeakyReLU) == "LeakyReLU");
+        neurons::NodeType::LeakyReLU) == "LeakyReLU");
   }
   SECTION("ELU") {
     REQUIRE(neurons::NodeTypeToString(
-        neurons::ActivationNodeType::ELU) == "ELU");
+        neurons::NodeType::ELU) == "ELU");
   }
   SECTION("ThresholdReLU") {
     REQUIRE(neurons::NodeTypeToString(
-        neurons::ActivationNodeType::ThresholdReLU) == "ThresholdReLU");
+        neurons::NodeType::ThresholdReLU) == "ThresholdReLU");
   }
   SECTION("GatedLinearUnit") {
     REQUIRE(neurons::NodeTypeToString(
-        neurons::ActivationNodeType::GatedLinearUnit) == "GatedLinearUnit");
+        neurons::NodeType::GatedLinearUnit) == "GatedLinearUnit");
   }
   SECTION("LogSoftmax") {
     REQUIRE(neurons::NodeTypeToString(
-        neurons::ActivationNodeType::LogSoftmax) == "LogSoftmax");
+        neurons::NodeType::LogSoftmax) == "LogSoftmax");
   }
   SECTION("Log") {
     REQUIRE(neurons::NodeTypeToString(
-        neurons::ActivationNodeType::Log) == "Log");
-  }
-}
-
-/*
- * std::unique_ptr<fl::Module> SpawnActivation(ActivationNodeType type);
- */
-TEST_CASE("Node: SpawnActivation", "[SpawnActivation]") {
-  SECTION("Sigmoid") {
-    REQUIRE(neurons::SpawnActivation(
-        neurons::ActivationNodeType::Sigmoid)->prettyString() == "Sigmoid");
-  }
-  SECTION("Tanh") {
-    REQUIRE(neurons::SpawnActivation(
-        neurons::ActivationNodeType::Tanh)->prettyString() == "Tanh");
-  }
-  SECTION("HardTanh") {
-    REQUIRE(neurons::SpawnActivation(
-        neurons::ActivationNodeType::HardTanh)->prettyString() == "HardTanh");
-  }
-  SECTION("ReLU") {
-    REQUIRE(neurons::SpawnActivation(
-        neurons::ActivationNodeType::ReLU)->prettyString() == "ReLU");
-  }
-  SECTION("LeakyReLU") {
-    REQUIRE(neurons::SpawnActivation(
-        neurons::ActivationNodeType::LeakyReLU)->prettyString() ==
-        "LeakyReLU (0.000000)");
-  }
-  SECTION("ELU") {
-    REQUIRE(neurons::SpawnActivation(
-        neurons::ActivationNodeType::ELU)->prettyString() == "ELU (1.000000)");
-  }
-  SECTION("ThresholdReLU") {
-    REQUIRE(neurons::SpawnActivation(
-        neurons::ActivationNodeType::ThresholdReLU)->prettyString() ==
-        "ThresholdReLU");
-  }
-  SECTION("GatedLinearUnit") {
-    REQUIRE(neurons::SpawnActivation(
-        neurons::ActivationNodeType::GatedLinearUnit)->prettyString() ==
-        "GatedLinearUnit (0)");
-  }
-  SECTION("LogSoftmax") {
-    REQUIRE(neurons::SpawnActivation(
-        neurons::ActivationNodeType::LogSoftmax)->prettyString() ==
-        "LogSoftmax (0)");
-  }
-  SECTION("Log") {
-    REQUIRE(neurons::SpawnActivation(
-        neurons::ActivationNodeType::Log)->prettyString() == "Log");
+        neurons::NodeType::Log) == "Log");
   }
 }
