@@ -79,4 +79,24 @@ TEST_CASE("NodeTypeToString", "[NodeTypeToString][NodeType]") {
     REQUIRE(neurons::NodeTypeToString(
         neurons::NodeType::Log) == "Log");
   }
+  SECTION("Dropout") {
+    REQUIRE(neurons::NodeTypeToString(
+        neurons::NodeType::Dropout) == "Dropout");
+  }
+  SECTION("Pool2D") {
+    REQUIRE(neurons::NodeTypeToString(
+        neurons::NodeType::Pool2D) == "Pool2D");
+  }
+  SECTION("View") {
+    REQUIRE(neurons::NodeTypeToString(
+        neurons::NodeType::View) == "View");
+  }
+  SECTION("LayerNorm") {
+    REQUIRE(neurons::NodeTypeToString(
+        neurons::NodeType::LayerNorm) == "LayerNorm");
+  }
+  SECTION("BatchNorm") {
+    REQUIRE(neurons::NodeTypeToString(
+        neurons::NodeType::BatchNorm) == "BatchNorm");
+  }
 }

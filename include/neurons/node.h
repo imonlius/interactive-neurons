@@ -9,7 +9,9 @@ namespace neurons {
 enum NodeType {
   Dummy, Conv2D, Linear,
   Sigmoid, Tanh, HardTanh, ReLU, LeakyReLU,
-  ELU, ThresholdReLU, GatedLinearUnit, LogSoftmax, Log
+  ELU, ThresholdReLU, GatedLinearUnit, LogSoftmax, Log,
+  Dropout, Pool2D, View,
+  LayerNorm, BatchNorm
 };
 
 // Get the NodeType as an std::string

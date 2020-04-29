@@ -16,3 +16,5 @@ imgui-node-editor for demonstration.
 node/link adding and deleting. Fixed memory management of flashlight modules in Nodes.
 
 2020-04-24: Implemented node adding configuration and activation function nodes.
+
+2020-04-28: Added more Node types to the editor. 

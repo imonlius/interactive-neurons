@@ -33,6 +33,16 @@ std::string NodeTypeToString(NodeType type) {
       return "LogSoftmax";
     case Log:
       return "Log";
+    case Dropout:
+      return "Dropout";
+    case Pool2D:
+      return "Pool2D";
+    case View:
+      return "View";
+    case LayerNorm:
+      return "LayerNorm";
+    case BatchNorm:
+      return "BatchNorm";
     default:
       throw std::exception();
   }

@@ -11,10 +11,10 @@ class Network {
 
  public:
 
-  // Retrieve read-only std::deque of Nodes.
+  // Retrieve std::deque of Nodes.
   [[nodiscard]] std::deque<Node>& GetNodes();
 
-  // Retrieve read-only std::deque of Links.
+  // Retrieve std::deque of Links.
   [[nodiscard]] std::deque<Link>& GetLinks();
 
   // Add a Node to the network with a unique_ptr to an fl::Module.
