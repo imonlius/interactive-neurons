@@ -10,8 +10,8 @@ enum NodeType {
   Dummy, Conv2D, Linear,
   Sigmoid, Tanh, HardTanh, ReLU, LeakyReLU,
   ELU, ThresholdReLU, GatedLinearUnit, LogSoftmax, Log,
-  Dropout, Pool2D, View,
-  LayerNorm, BatchNorm
+  Dropout, Pool2D, View, LayerNorm, BatchNorm,
+  CategoricalCrossEntropy, MeanAbsoluteError, MeanSquaredError
 };
 
 // Get the NodeType as an std::string

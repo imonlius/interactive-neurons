@@ -32,6 +32,10 @@ class Network {
   // Delete a Node from the network.
   void DeleteNode(const Node& node);
 
+  // Returns pointer to the loss node of the network. If network does not have
+  // a loss node set, returns nullptr.
+  [[nodiscard]] const Node* GetLossNode() const;
+
  private:
 
   // Keep track of next unique ID for Nodes/Links.

@@ -99,4 +99,30 @@ TEST_CASE("NodeTypeToString", "[NodeTypeToString][NodeType]") {
     REQUIRE(neurons::NodeTypeToString(
         neurons::NodeType::BatchNorm) == "BatchNorm");
   }
+  SECTION("CategoricalCrossEntropy") {
+    REQUIRE(neurons::NodeTypeToString(
+        neurons::NodeType::CategoricalCrossEntropy) ==
+        "CategoricalCrossEntropy");
+  }
+  SECTION("MeanAbsoluteError") {
+    REQUIRE(neurons::NodeTypeToString(
+        neurons::NodeType::MeanAbsoluteError) == "MeanAbsoluteError");
+  }
+  SECTION("MeanSquaredError") {
+    REQUIRE(neurons::NodeTypeToString(
+        neurons::NodeType::MeanSquaredError) == "MeanSquaredError");
+  }
+  SECTION("CategoricalCrossEntropy") {
+    REQUIRE(neurons::NodeTypeToString(
+        neurons::NodeType::CategoricalCrossEntropy) ==
+        "CategoricalCrossEntropy");
+  }
+  SECTION("MeanAbsoluteError") {
+    REQUIRE(neurons::NodeTypeToString(
+        neurons::NodeType::MeanAbsoluteError) == "MeanAbsoluteError");
+  }
+  SECTION("MeanSquaredError") {
+    REQUIRE(neurons::NodeTypeToString(
+        neurons::NodeType::MeanSquaredError) == "MeanSquaredError");
+  }
 }

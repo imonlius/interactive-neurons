@@ -43,6 +43,12 @@ std::string NodeTypeToString(NodeType type) {
       return "LayerNorm";
     case BatchNorm:
       return "BatchNorm";
+    case CategoricalCrossEntropy:
+      return "CategoricalCrossEntropy";
+    case MeanAbsoluteError:
+      return "MeanAbsoluteError";
+    case MeanSquaredError:
+      return "MeanSquaredError";
     default:
       throw std::exception();
   }

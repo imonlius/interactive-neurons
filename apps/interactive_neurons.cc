@@ -46,10 +46,15 @@ void DrawNodes(const std::vector<NodeAdapter>& nodes) {
     ImGui::Text("Input");
     imnodes::EndAttribute();
 
-    imnodes::BeginOutputAttribute(node.output_id_);
-    ImGui::Indent(50);
-    ImGui::Text("Output");
-    imnodes::EndAttribute();
+    // loss nodes should not have an output pin
+    NodeType type = node.node_->GetNodeType();
+    if (!(type == CategoricalCrossEntropy || type == MeanSquaredError ||
+          type == MeanAbsoluteError)) {
+      imnodes::BeginOutputAttribute(node.output_id_);
+      ImGui::Indent(50);
+      ImGui::Text("Output");
+      imnodes::EndAttribute();
+    }
 
     imnodes::EndNode();
   }
@@ -211,6 +216,46 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
           break;
         default:
           throw std::runtime_error("Unexpected activation type.");
+      }
+      if (module) {
+        // if module has been created
+        network.AddNode(spawn_type, std::move(module));
+        node_created = true;
+      }
+      ImGui::EndMenu();
+    }
+
+    // Loss nodes. Only show if no Loss node exists (short-circuit eval.)
+    if (network.GetLossNode() == nullptr && ImGui::BeginMenu("Loss")) {
+      // Loss nodes require no parameters, so we can spawn it here
+      // without any additional pop up menus
+      const std::vector<NodeType> losses =
+          {CategoricalCrossEntropy, MeanAbsoluteError, MeanSquaredError};
+      NodeType spawn_type = Dummy;
+      for (auto loss : losses) {
+        if (ImGui::MenuItem(NodeTypeToString(loss).c_str())) {
+          spawn_type = loss;
+        }
+      }
+      std::unique_ptr<fl::BinaryModule> module;
+      switch (spawn_type) {
+        case CategoricalCrossEntropy:
+          module = std::make_unique<fl::CategoricalCrossEntropy>(
+              fl::CategoricalCrossEntropy());
+          break;
+        case MeanAbsoluteError:
+          module = std::make_unique<fl::MeanAbsoluteError>(
+              fl::MeanAbsoluteError());
+          break;
+        case MeanSquaredError:
+          module = std::make_unique<fl::MeanSquaredError>(
+              fl::MeanSquaredError());
+          break;
+        case Dummy:
+          // if no loss node is selected
+          break;
+        default:
+          throw std::runtime_error("Unexpected loss type.");
       }
       if (module) {
         // if module has been created

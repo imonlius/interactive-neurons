@@ -184,3 +184,28 @@ TEST_CASE("Network: Deleting Links", "[Network][DeleteLink]") {
     REQUIRE(network.GetLinks().size() == 1);
   }
 }
+
+/*
+ * const Node* Network::GetLossNode() const
+ */
+
+TEST_CASE("Network: Get Loss Node", "[Network][GetLossNode]") {
+
+  auto network = neurons::Network();
+
+  SECTION("No loss node") {
+    auto module = fl::Linear(1, 1);
+    network.AddNode(neurons::NodeType::Linear,
+                    std::make_unique<fl::Linear>(module));
+    REQUIRE(network.GetLossNode() == nullptr);
+  }
+  SECTION("Adding and deleting a loss node") {
+    auto module = fl::CategoricalCrossEntropy();
+    network.AddNode(neurons::NodeType::CategoricalCrossEntropy,
+        std::make_unique<fl::CategoricalCrossEntropy>(module));
+    REQUIRE(network.GetLossNode()->GetNodeType() ==
+            neurons::NodeType::CategoricalCrossEntropy);
+    network.DeleteNode(*network.GetLossNode());
+    REQUIRE(network.GetLossNode() == nullptr);
+  }
+}

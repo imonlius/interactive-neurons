@@ -78,4 +78,15 @@ std::deque<Node>& Network::GetNodes() {
   return nodes_;
 }
 
+const Node* Network::GetLossNode() const {
+  for (const auto& node : nodes_) {
+    NodeType type = node.GetNodeType();
+    if (type == CategoricalCrossEntropy || type == MeanAbsoluteError ||
+        type == MeanSquaredError) {
+      return &node;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace neurons
