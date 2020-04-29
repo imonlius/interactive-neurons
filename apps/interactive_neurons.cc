@@ -238,6 +238,9 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
     freeze_editor = true;
   }
 
+  ImVec2 window_size = ImVec2(300, 300);
+
+  ImGui::SetNextWindowContentSize(window_size);
   if (ImGui::BeginPopupModal("BatchNorm")) {
     static int int_args[2]; // must be static to be preserved between draws
     static double double_args[2];
@@ -264,6 +267,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
       ImGui::CloseCurrentPopup();
     }
 
+    ImGui::SameLine();
     if (ImGui::Button("Add Node")) {
       // arguments valid if Feature Axis >= 0 and Feature Size > 0
       bool args_valid = (int_args[0] >= 0 && int_args[1] > 0);
@@ -279,6 +283,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
     ImGui::EndPopup();
   }
 
+  ImGui::SetNextWindowContentSize(window_size);
   if (ImGui::BeginPopupModal("LayerNorm")) {
     static int axis; // must be static to be preserved between draws
     static double epsilon;
@@ -300,6 +305,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
       ImGui::CloseCurrentPopup();
     }
 
+    ImGui::SameLine();
     if (ImGui::Button("Add Node")) {
       // arguments valid if Feature Axis >= 0
       bool args_valid = (axis >= 0);
@@ -314,6 +320,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
     ImGui::EndPopup();
   }
 
+  ImGui::SetNextWindowContentSize(window_size);
   if (ImGui::BeginPopupModal("Dropout")) {
     static double ratio; // must be static to be preserved between draws
     const std::string labels[] = {"Dropout Ratio"};
@@ -327,6 +334,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
       ImGui::CloseCurrentPopup();
     }
 
+    ImGui::SameLine();
     if (ImGui::Button("Add Node")) {
       // Check that arguments are valid
       bool args_valid = (ratio >= 0 && ratio < 1);
@@ -341,6 +349,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
     ImGui::EndPopup();
   }
 
+  ImGui::SetNextWindowContentSize(window_size);
   if (ImGui::BeginPopupModal("View")) {
     static int dims[4];
     const std::string labels[] = {"Dimension 1", "Dimension 2",
@@ -356,6 +365,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
       ImGui::CloseCurrentPopup();
     }
 
+    ImGui::SameLine();
     if (ImGui::Button("Add Node")) {
       // Check that arguments are valid
       bool args_valid = true;
@@ -386,6 +396,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
     ImGui::EndPopup();
   }
 
+  ImGui::SetNextWindowContentSize(window_size);
   if (ImGui::BeginPopupModal("Conv2D")) {
 
     static int n_args[10]; // must be static to be preserved between draws
@@ -409,6 +420,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
       ImGui::CloseCurrentPopup();
     }
 
+    ImGui::SameLine();
     if (ImGui::Button("Add Node")) {
       // Check that arguments are valid
       bool args_valid = true;
@@ -433,6 +445,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
     ImGui::EndPopup();
   }
 
+  ImGui::SetNextWindowContentSize(window_size);
   if (ImGui::BeginPopupModal("Pool2D")) {
 
     static int n_args[6]; // must be static to be preserved between draws
@@ -483,6 +496,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
       ImGui::CloseCurrentPopup();
     }
 
+    ImGui::SameLine();
     if (ImGui::Button("Add Node")) {
       // Check that arguments are valid
       // All fields must be greater than 0, except padding which must be >= -1
@@ -502,6 +516,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
     ImGui::EndPopup();
   }
 
+  ImGui::SetNextWindowContentSize(window_size);
   if (ImGui::BeginPopupModal("Linear")) {
     static int n_args[2]; // must be static to be preserved between draws
     static bool bias;
@@ -519,6 +534,7 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
       ImGui::CloseCurrentPopup();
     }
 
+    ImGui::SameLine();
     if (ImGui::Button("Add Node")) {
       // Check that arguments are valid
       bool args_valid = (n_args[0] > 0 && n_args[1] > 0);
