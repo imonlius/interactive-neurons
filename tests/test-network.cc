@@ -59,7 +59,8 @@ TEST_CASE("Network: Add Nodes", "[Network][AddNode]") {
 /*
  * std::shared_ptr<Node> AddNode(std::unique_ptr<fl::Dataset> module);
  */
-TEST_CASE("Network: Add Nodes: Dataset", "[Network][AddNode][DataNode]") {
+TEST_CASE("Network: Add Nodes: Dataset",
+    "[Network][AddNode][DataNode][GetDataNode]") {
 
   auto X = af::randu(1, 1);
   auto Y = af::randu(1, 1);
@@ -67,12 +68,14 @@ TEST_CASE("Network: Add Nodes: Dataset", "[Network][AddNode][DataNode]") {
   SECTION("No DataNode present in Network yet") {
     auto network = neurons::Network();
     REQUIRE(network.GetNodes().empty());
+    REQUIRE(network.GetDataNode() == nullptr);
 
     network.AddNode(std::make_unique<fl::TensorDataset>(
         fl::TensorDataset({X, Y})));
 
     REQUIRE(network.GetNodes().size() == 1);
     REQUIRE(network.GetNodes().front()->GetNodeType() == neurons::Dataset);
+    REQUIRE(network.GetDataNode() == network.GetNodes().front());
   }
 
   SECTION("DataNode is already present in Network") {
@@ -82,6 +85,7 @@ TEST_CASE("Network: Add Nodes: Dataset", "[Network][AddNode][DataNode]") {
         fl::TensorDataset({X, Y})));
 
     REQUIRE(network.GetNodes().size() == 1);
+    REQUIRE(network.GetDataNode() == network.GetNodes().front());
 
     // should return the original DataNode
     REQUIRE(network.AddNode(std::make_unique<fl::TensorDataset>(
@@ -96,13 +100,16 @@ TEST_CASE("Network: Add Nodes: Dataset", "[Network][AddNode][DataNode]") {
     network.AddNode(std::make_unique<fl::TensorDataset>(
         fl::TensorDataset({X, Y})));
     REQUIRE(network.GetNodes().size() == 1);
+    REQUIRE(network.GetDataNode() == network.GetNodes().front());
 
     network.DeleteNode(*network.GetNodes().front());
     REQUIRE(network.GetNodes().empty());
+    REQUIRE(network.GetDataNode() == nullptr);
 
     network.AddNode(std::make_unique<fl::TensorDataset>(
         fl::TensorDataset({X, Y})));
     REQUIRE(network.GetNodes().size() == 1);
+    REQUIRE(network.GetDataNode() == network.GetNodes().front());
   }
 }
 

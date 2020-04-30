@@ -91,6 +91,16 @@ std::deque<std::shared_ptr<Node>>& Network::GetNodes() {
   return nodes_;
 }
 
+std::shared_ptr<Node> Network::GetDataNode() const {
+  for (const auto& node : nodes_) {
+    NodeType type = node->GetNodeType();
+    if (type == Dataset) {
+      return node;
+    }
+  }
+  return nullptr;
+}
+
 std::shared_ptr<Node> Network::GetLossNode() const {
   for (const auto& node : nodes_) {
     NodeType type = node->GetNodeType();
