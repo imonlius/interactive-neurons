@@ -16,7 +16,6 @@ using cinder::app::MouseEvent;
 
 using neurons::adapter::NodeAdapter;
 using neurons::adapter::LinkAdapter;
-using neurons::Node;
 using neurons::Network;
 using neurons::Link;
 

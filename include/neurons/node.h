@@ -2,21 +2,21 @@
 #ifndef FINALPROJECT_NEURONS_NODE_H_
 #define FINALPROJECT_NEURONS_NODE_H_
 
-#include <flashlight/flashlight.h>
+#include <string>
 
 namespace neurons {
 
 enum NodeType {
-  Dummy, Conv2D, Linear,
-  Sigmoid, Tanh, HardTanh, ReLU, LeakyReLU,
-  ELU, ThresholdReLU, GatedLinearUnit, LogSoftmax, Log,
-  Dropout, Pool2D, View, LayerNorm, BatchNorm,
-  CategoricalCrossEntropy, MeanAbsoluteError, MeanSquaredError
+  Dummy, Conv2D, Linear, Sigmoid, Tanh, HardTanh, ReLU, LeakyReLU, ELU,
+  ThresholdReLU, GatedLinearUnit, LogSoftmax, Log, Dropout, Pool2D,
+  View, LayerNorm, BatchNorm, CategoricalCrossEntropy, MeanAbsoluteError,
+  MeanSquaredError, Dataset
 };
 
 // Get the NodeType as an std::string
 std::string NodeTypeToString(NodeType type);
 
+// Abstract class to represent a Node in the Network.
 class Node {
 
  public:
@@ -27,28 +27,22 @@ class Node {
   // Get Node type
   [[nodiscard]] NodeType GetNodeType() const;
 
-  // Node Constructor
-  Node(size_t id, NodeType type, std::unique_ptr<fl::Module> module);
+  // Get String representation of Node. Must be overriden in derived classes.
+  [[nodiscard]] virtual std::string prettyString() const = 0;
 
-  // Wrapper methods that will be called on the wrapped fl::Module.
-  [[nodiscard]] std::vector<fl::Variable> params() const;
-  void train();
-  void eval();
-  [[nodiscard]] fl::Variable param(int position) const;
-  void setParams(const fl::Variable& var, int position);
-  void zeroGrad();
-  std::vector<fl::Variable> forward(const std::vector<fl::Variable>& inputs);
-  [[nodiscard]] std::string prettyString() const;
+  // Public constructor
+  Node(size_t id, NodeType type) : id_(id), type_(type) {};
+
+  // Virtual destructor
+  virtual ~Node() = default;
 
  private:
 
   size_t id_;
   NodeType type_;
 
-  // Unique pointer ensures that Node has sole ownership over module
-  std::unique_ptr<fl::Module> module_;
 };
 
 }  // namespace neurons
 
-#endif // FINALPROJECT_NEURONS_NODE_H_
+#endif //FINALPROJECT_NEURONS_NODE_H_

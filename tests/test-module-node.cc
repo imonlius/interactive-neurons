@@ -2,24 +2,25 @@
 
 #define CATCH_CONFIG_MAIN
 
+#include <neurons/module-node.h>
+
 #include <catch2/catch.hpp>
-#include <neurons/node.h>
 
 /*
  * Node(size_t id, NodeType type, fl::ModulePtr&& module_ptr)
  */
 
-TEST_CASE("Node: Constructor", "[Node][Constructor]") {
+TEST_CASE("ModuleNode: Constructor", "[ModuleNode][Constructor]") {
   SECTION("Linear NodeType") {
     auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    auto node = neurons::Node(0, neurons::NodeType::Conv2D,
+    auto node = neurons::ModuleNode(0, neurons::NodeType::Conv2D,
                               std::make_unique<fl::Conv2D>(module));
     REQUIRE(node.GetId() == 0);
     REQUIRE(node.GetNodeType() == neurons::NodeType::Conv2D);
   }
   SECTION("Conv2D NodeType") {
     auto module = fl::Linear(1, 1);
-    auto node = neurons::Node(1, neurons::NodeType::Linear,
+    auto node = neurons::ModuleNode(1, neurons::NodeType::Linear,
                               std::make_unique<fl::Linear>(module));
     REQUIRE(node.GetId() == 1);
     REQUIRE(node.GetNodeType() == neurons::NodeType::Linear);

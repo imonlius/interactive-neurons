@@ -2,7 +2,7 @@
 #ifndef FINALPROJECT_NEURONS_LINK_H_
 #define FINALPROJECT_NEURONS_LINK_H_
 
-#include "node.h"
+#include "module-node.h"
 
 namespace neurons {
 

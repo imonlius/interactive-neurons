@@ -3,7 +3,8 @@
 #define FINALPROJECT_NEURONS_NETWORK_H
 
 #include "link.h"
-#include "node.h"
+#include "data-node.h"
+#include "module-node.h"
 
 namespace neurons {
 
@@ -12,15 +13,21 @@ class Network {
  public:
 
   // Retrieve std::deque of Nodes.
-  [[nodiscard]] std::deque<Node>& GetNodes();
+  [[nodiscard]] std::deque<std::shared_ptr<Node>>& GetNodes();
 
   // Retrieve std::deque of Links.
   [[nodiscard]] std::deque<Link>& GetLinks();
 
-  // Add a Node to the network with a unique_ptr to an fl::Module.
+  // Add a ModuleNode to the network with a unique_ptr to an fl::Module.
   // Network will take ownership of the fl::Module pointer.
   // Returns a pointer to the Node if successful. Otherwise, returns nullptr.
-  Node* AddNode(NodeType type, std::unique_ptr<fl::Module> module);
+  std::shared_ptr<Node> AddNode(NodeType type,
+      std::unique_ptr<fl::Module> module);
+
+  // Add a DataNode to the network with a unique_ptr to an fl::Dataset.
+  // Only adds a new node if no DataNode exists in the network.
+  // If a DataNode already exists, returns a pointer to that node.
+  std::shared_ptr<Node> AddNode(std::unique_ptr<fl::Dataset> module);
 
   // Add a Link to the network if the input and output form a valid Link.
   // Returns a pointer to the Link if successful. Otherwise, returns nullptr.
@@ -34,15 +41,15 @@ class Network {
 
   // Returns pointer to the loss node of the network. If network does not have
   // a loss node set, returns nullptr.
-  [[nodiscard]] const Node* GetLossNode() const;
+  [[nodiscard]] std::shared_ptr<Node> GetLossNode() const;
 
  private:
 
   // Keep track of next unique ID for Nodes/Links.
   size_t unique_id_;
 
-  // Deque of all the Nodes in the network.
-  std::deque<Node> nodes_;
+  // Deque of all the Node pointers in the network.
+  std::deque<std::shared_ptr<Node>> nodes_;
 
   // Deque of all the Links in the network.
   std::deque<Link> links_;

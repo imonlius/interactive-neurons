@@ -4,15 +4,16 @@
 
 namespace neurons::adapter {
 
-NodeAdapter::NodeAdapter(Node& node) {
-  node_ = &node;
+NodeAdapter::NodeAdapter(const std::shared_ptr<Node>& node) {
+  node_ = node;
 
-  id_ = kIdMultiplier * node.GetId();
-  input_id_ = kIdMultiplier * node.GetId() + 1;
-  output_id_ = kIdMultiplier * node.GetId() + 2;
+  id_ = kIdMultiplier * node->GetId();
+  input_id_ = kIdMultiplier * node->GetId() + 1;
+  output_id_ = kIdMultiplier * node->GetId() + 2;
 }
 
-std::vector<NodeAdapter> BuildNodeAdapters(std::deque<Node>& nodes) {
+std::vector<NodeAdapter> BuildNodeAdapters(
+    std::deque<std::shared_ptr<Node>>& nodes) {
   auto adapters = std::vector<NodeAdapter>();
   adapters.reserve(nodes.size());
   for (auto& node : nodes) {

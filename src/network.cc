@@ -5,18 +5,17 @@
 namespace neurons {
 
 // Helper function, returns whether the deque contains the Node
-bool ContainsNode(const std::deque<neurons::Node>& nodes,
+bool ContainsNode(const std::deque<std::shared_ptr<Node>>& nodes,
     const neurons::Node& node) {
   for (auto& it : nodes) {
-    if(&it == &node) {
+    if(it.get() == &node) {
       return true;
     }
   }
   return false;
 }
 
-Link* Network::AddLink(neurons::Node& input,
-    neurons::Node& output) {
+Link* Network::AddLink(neurons::Node& input, neurons::Node& output) {
 
   // if Network does not have the Nodes, it cannot link them.
   if (!ContainsNode(nodes_, input) || !ContainsNode(nodes_, output)) {
@@ -30,11 +29,24 @@ Link* Network::AddLink(neurons::Node& input,
   return nullptr;
 }
 
-Node* Network::AddNode(neurons::NodeType type,
+std::shared_ptr<Node> Network::AddNode(neurons::NodeType type,
     std::unique_ptr<fl::Module> module) {
   // new Node takes ownership of the module_ptr
-  nodes_.emplace_back(unique_id_++, type, std::move(module));
-  return &nodes_.back();
+  nodes_.push_back(std::make_unique<neurons::ModuleNode>(
+      neurons::ModuleNode(unique_id_++, type, std::move(module))));
+  return nodes_.back();
+}
+
+std::shared_ptr<Node> Network::AddNode(std::unique_ptr<fl::Dataset> dataset) {
+  // if Dataset node already exists, just return the pointer to that
+  for (auto& node : nodes_) {
+    if (node->GetNodeType() == Dataset) {
+      return node;
+    }
+  }
+  nodes_.push_back(std::make_unique<neurons::DataNode>(
+      unique_id_++, std::move(dataset)));
+  return nodes_.back();
 }
 
 void Network::DeleteLink(const neurons::Link& link) {
@@ -49,10 +61,11 @@ void Network::DeleteLink(const neurons::Link& link) {
 }
 
 void Network::DeleteNode(const neurons::Node& node) {
+
   // remove the node first
   for (auto it = nodes_.begin(); it != nodes_.end(); ++it) {
     // assumes that only one copy of the Node exists
-    if (&(*it) == &node) {
+    if ((*it).get() == &node) {
       nodes_.erase(it);
       break;
     }
@@ -74,16 +87,16 @@ std::deque<Link>& Network::GetLinks() {
   return links_;
 }
 
-std::deque<Node>& Network::GetNodes() {
+std::deque<std::shared_ptr<Node>>& Network::GetNodes() {
   return nodes_;
 }
 
-const Node* Network::GetLossNode() const {
+std::shared_ptr<Node> Network::GetLossNode() const {
   for (const auto& node : nodes_) {
-    NodeType type = node.GetNodeType();
+    NodeType type = node->GetNodeType();
     if (type == CategoricalCrossEntropy || type == MeanAbsoluteError ||
         type == MeanSquaredError) {
-      return &node;
+      return node;
     }
   }
   return nullptr;

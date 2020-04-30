@@ -4,6 +4,8 @@
 #define FINALPROJECT_IMGUI_ADAPTER_LINK_ADAPTER_H
 
 #include "neurons/link.h"
+#include <vector>
+#include <deque>
 
 namespace neurons::adapter {
 

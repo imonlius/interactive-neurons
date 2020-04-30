@@ -1,8 +1,9 @@
 // Copyright (c) 2020 Simon Liu. All rights reserved.
 
-#include <catch2/catch.hpp>
 #include <neurons/link.h>
-#include <neurons/node.h>
+#include <neurons/module-node.h>
+
+#include <catch2/catch.hpp>
 
 // TODO: Update test cases to reflect link criteria.
 
@@ -14,7 +15,7 @@ TEST_CASE("Link: CanLink", "[Link][CanLink]") {
   // For now, all Nodes are allowed to link
   SECTION("Always Yes") {
     auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    auto node = neurons::Node(1,
+    auto node = neurons::ModuleNode(1,
         neurons::NodeType::Conv2D, std::make_unique<fl::Conv2D>(module));
     REQUIRE(neurons::Link::CanLink(node, node));
   }
@@ -27,10 +28,10 @@ TEST_CASE("Link: CanLink", "[Link][CanLink]") {
 TEST_CASE("Link: BuildLink", "[Link][BuildLink]") {
   SECTION("Always Yes") {
     auto input_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    auto input_node = neurons::Node(1,neurons::NodeType::Conv2D,
+    auto input_node = neurons::ModuleNode(1,neurons::NodeType::Conv2D,
         std::make_unique<fl::Conv2D>(input_module));
     auto output_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-    auto output_node = neurons::Node(1,neurons::NodeType::Conv2D,
+    auto output_node = neurons::ModuleNode(1,neurons::NodeType::Conv2D,
         std::make_unique<fl::Conv2D>(output_module));
     REQUIRE(neurons::Link::CanLink(input_node, output_node));
 

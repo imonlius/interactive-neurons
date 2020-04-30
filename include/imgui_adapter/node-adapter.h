@@ -4,6 +4,9 @@
 #define FINALPROJECT_IMGUI_ADAPTER_ADAPTER_H
 
 #include "neurons/node.h"
+#include <vector>
+#include <deque>
+#include <memory>
 
 namespace neurons::adapter {
 
@@ -18,15 +21,16 @@ struct NodeAdapter {
   size_t input_id_;
   size_t output_id_;
 
-  Node* node_;
+  std::shared_ptr<Node> node_;
 
   // Constructor from Node
-  explicit NodeAdapter(Node& node);
+  explicit NodeAdapter(const std::shared_ptr<Node>& node);
 };
 
 
 // Return a vector of NodeAdapters wrapped around the passed nodes
-std::vector<NodeAdapter> BuildNodeAdapters(std::deque<Node>& nodes);
+std::vector<NodeAdapter> BuildNodeAdapters(
+    std::deque<std::shared_ptr<Node>>& nodes);
 
 // Returns a pointer to a Node in the passed vector that owns the node ID.
 // If multiple nodes have the node ID, will return the first one.

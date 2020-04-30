@@ -18,3 +18,11 @@ node/link adding and deleting. Fixed memory management of flashlight modules in 
 2020-04-24: Implemented node adding configuration and activation function nodes.
 
 2020-04-28: Added more Node types to the editor. 
+
+2020-04-29: Refactored Node as an abstract class with DataNode and ModuleNode subclasses.
+
+TODO: 
+1. Add Dataloader class (with DataNode counterpart).
+2. Add graph algorithms for network checking. 
+3. Implement machine learning part.
+4. Add graph display of machine learning loss.
