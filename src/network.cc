@@ -22,11 +22,9 @@ Link* Network::AddLink(neurons::Node& input, neurons::Node& output) {
     return nullptr;
   }
 
-  if (Link::CanLink(input, output)) {
-    links_.push_back(Link::BuildLink(unique_id_++, input, output));
-    return &links_.back();
-  }
-  return nullptr;
+  // TODO: Implement link checking to verify if link is allowed
+  links_.emplace_back(unique_id_++, input, output);
+  return &links_.back();
 }
 
 std::shared_ptr<Node> Network::AddNode(neurons::NodeType type,
