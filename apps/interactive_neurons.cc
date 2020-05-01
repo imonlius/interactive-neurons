@@ -20,7 +20,7 @@ using neurons::adapter::LinkAdapter;
 using neurons::Network;
 using neurons::Link;
 
-void AddDataNode(Network& network,
+void SpawnDataNode(Network& network,
     const std::string& data_directory, dim_t batch_size) {
 
   // Initialize DataNode of the Network
@@ -64,7 +64,7 @@ InteractiveNeurons::InteractiveNeurons() {
   freeze_editor_ = false;
 
   dim_t kBatchSize = 64;
-  AddDataNode(network_, kDataDirectory, kBatchSize);
+  SpawnDataNode(network_, kDataDirectory, kBatchSize);
 }
 
 void InteractiveNeurons::setup() {

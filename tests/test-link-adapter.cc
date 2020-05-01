@@ -22,7 +22,7 @@ TEST_CASE("LinkAdapter: Constructor", "[LinkAdapter][Constructor]") {
   auto output_node = neurons::ModuleNode(output_id, neurons::NodeType::Conv2D,
       std::make_unique<fl::Conv2D>(output_module));
 
-  auto link = neurons::Link::BuildLink(link_id, input_node, output_node);
+  auto link = neurons::Link(link_id, input_node, output_node);
 
   auto link_adapter = neurons::adapter::LinkAdapter(link);
 
@@ -61,8 +61,8 @@ TEST_CASE("LinkAdapter: BuildLinkAdapters",
     auto output_node = neurons::ModuleNode(output_id, neurons::NodeType::Conv2D,
         std::make_unique<fl::Conv2D>(output_module));
 
-    auto link = neurons::Link::BuildLink(link_id, input_node, output_node);
-    auto link_reverse = neurons::Link::BuildLink(
+    auto link = neurons::Link(link_id, input_node, output_node);
+    auto link_reverse = neurons::Link(
         reverse_link_id, output_node, input_node);
 
     std::deque<neurons::Link> links = {link, link_reverse};
@@ -107,8 +107,8 @@ TEST_CASE("LinkAdapter: FindOwnerLink", "[LinkAdapter][FindOwnerLink]") {
   auto output_node = neurons::ModuleNode(output_id, neurons::NodeType::Conv2D,
       std::make_unique<fl::Conv2D>(output_module));
 
-  auto link = neurons::Link::BuildLink(link_id, input_node, output_node);
-  auto link_reverse = neurons::Link::BuildLink(reverse_link_id,
+  auto link = neurons::Link(link_id, input_node, output_node);
+  auto link_reverse = neurons::Link(reverse_link_id,
       output_node, input_node);
 
   std::deque<neurons::Link> links = {link, link_reverse};

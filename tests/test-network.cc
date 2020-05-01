@@ -246,7 +246,7 @@ TEST_CASE("Network: Deleting Links", "[Network][DeleteLink]") {
   }
 
   SECTION("Removing an out-of-network link") {
-    auto link = neurons::Link::BuildLink(5, *network.GetNodes().at(0),
+    auto link = neurons::Link(5, *network.GetNodes().at(0),
                                          *network.GetNodes().at(1));
     network.DeleteLink(link);
     // should not change

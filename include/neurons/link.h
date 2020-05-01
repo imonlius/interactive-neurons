@@ -17,21 +17,16 @@ class Link {
   // Get link ID.
   [[nodiscard]] size_t GetId() const;
 
-  // Returns whether a Link is possible between the input and output nodes.
-  static bool CanLink(const Node& input, const Node& output);
-
-  // Returns a Link if a link is possible.
-  // Throws an exception otherwise.
-  static Link BuildLink(size_t id, Node& input, Node& output);
+  // Public constructor. Nodes are passed as references to ensure
+  // they are not nullptr at time of construction.
+  Link(size_t id, Node& input, Node& output):
+      input_(&input), output_(&output), id_(id) { };
 
  private:
 
+  // ID should not be edited after construction.
   size_t id_;
 
-  // Constructor is private to allow usage by BuildLink() only
-  // Guarantees that passed pointers at time of construction are not nullptr
-  Link(size_t id, Node* input, Node* output):
-      input_(input), output_(output), id_(id) { };
 };
 
 }  // namespace neurons
