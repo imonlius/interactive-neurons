@@ -33,7 +33,7 @@ class Network {
 
   // Add a Link to the network if the input and output form a valid Link.
   // Returns a pointer to the Link if successful. Otherwise, returns nullptr.
-  Link* AddLink(Node& input, Node& output);
+  Link* AddLink(std::shared_ptr<Node> input, std::shared_ptr<Node> output);
 
   // Delete a Link from the network.
   void DeleteLink(const Link& link);

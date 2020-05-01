@@ -12,15 +12,17 @@
 
 TEST_CASE("Link: Constructor", "[Link][Constructor]") {
   auto input_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-  auto input_node = neurons::ModuleNode(1,neurons::NodeType::Conv2D,
-      std::make_unique<fl::Conv2D>(input_module));
+  auto input_node = std::make_shared<neurons::ModuleNode>(
+      neurons::ModuleNode(1,neurons::NodeType::Conv2D,
+      std::make_unique<fl::Conv2D>(input_module)));
   auto output_module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
-  auto output_node = neurons::ModuleNode(1,neurons::NodeType::Conv2D,
-      std::make_unique<fl::Conv2D>(output_module));
+  auto output_node = std::make_shared<neurons::ModuleNode>(
+      neurons::ModuleNode(1,neurons::NodeType::Conv2D,
+      std::make_unique<fl::Conv2D>(output_module)));
 
   auto link = neurons::Link(3, input_node, output_node);
   REQUIRE(link.GetId() == 3);
-  REQUIRE(link.input_ == &input_node);
-  REQUIRE(link.output_ == &output_node);
+  REQUIRE(link.input_ == input_node);
+  REQUIRE(link.output_ == output_node);
 }
 

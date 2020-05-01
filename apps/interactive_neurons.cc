@@ -138,7 +138,7 @@ void AttemptLink(std::vector<NodeAdapter>& nodes,
   }
 
   // attempt to add link
-  network.AddLink(*input->node_, *output->node_);
+  network.AddLink(input->node_, output->node_);
 }
 
 // Handle Link deletion
@@ -248,7 +248,8 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
           module = std::make_unique<fl::ThresholdReLU>(fl::ThresholdReLU());
           break;
         case GatedLinearUnit:
-          module = std::make_unique<fl::GatedLinearUnit>(fl::GatedLinearUnit());
+          module = std::make_unique<fl::GatedLinearUnit>(
+              fl::GatedLinearUnit());
           break;
         case LogSoftmax:
           module = std::make_unique<fl::LogSoftmax>(fl::LogSoftmax());

@@ -6,16 +6,17 @@ namespace neurons {
 
 // Helper function, returns whether the deque contains the Node
 bool ContainsNode(const std::deque<std::shared_ptr<Node>>& nodes,
-    const neurons::Node& node) {
-  for (auto& it : nodes) {
-    if(it.get() == &node) {
+                  const std::shared_ptr<Node> node) {
+  for (const auto& it : nodes) {
+    if(it == node) {
       return true;
     }
   }
   return false;
 }
 
-Link* Network::AddLink(neurons::Node& input, neurons::Node& output) {
+Link* Network::AddLink(std::shared_ptr<Node> input,
+    std::shared_ptr<Node> output) {
 
   // if Network does not have the Nodes, it cannot link them.
   if (!ContainsNode(nodes_, input) || !ContainsNode(nodes_, output)) {
@@ -75,7 +76,7 @@ void Network::DeleteNode(const neurons::Node& node) {
   // remove any links with the node
   for (auto it = links_.begin(); it != links_.end(); ++it) {
     // check if link has node as input or output based on addresses
-    if (it->input_ == &node || it->output_ == &node) {
+    if (it->input_.get() == &node || it->output_.get() == &node) {
       // removes the element and adjusts the iterator at the same time
       it = links_.erase(it);
       --it;

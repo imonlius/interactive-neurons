@@ -11,16 +11,15 @@ class Link {
  public:
 
   // Public member variables.
-  Node* input_;
-  Node* output_;
+  std::shared_ptr<Node> input_;
+  std::shared_ptr<Node> output_;
 
   // Get link ID.
   [[nodiscard]] size_t GetId() const;
 
-  // Public constructor. Nodes are passed as references to ensure
-  // they are not nullptr at time of construction.
-  Link(size_t id, Node& input, Node& output):
-      input_(&input), output_(&output), id_(id) { };
+  // Public constructor. Pass shared_ptr by value as Links will share ownership.
+  Link(size_t id, std::shared_ptr<Node> input, std::shared_ptr<Node> output):
+      input_(input), output_(output), id_(id) { };
 
  private:
 
