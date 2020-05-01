@@ -146,8 +146,8 @@ _deps
 # Don't track database files.
 # assets/*.db
 # assets/*.sqlite*
-assets/t10k-images-idx3-ubyte.gz
-assets/t10k-labels-idx1-ubyte.gz
-assets/train-images-idx3-ubyte.gz
-assets/train-labels-idx1-ubyte.gz
 assets/imgui.ini
+assets/mnist/t10k-images-idx3-ubyte
+assets/mnist/t10k-labels-idx1-ubyte
+assets/mnist/train-images-idx3-ubyte
+assets/mnist/train-labels-idx1-ubyte

@@ -37,15 +37,18 @@ std::shared_ptr<Node> Network::AddNode(neurons::NodeType type,
   return nodes_.back();
 }
 
-std::shared_ptr<Node> Network::AddNode(std::unique_ptr<fl::Dataset> dataset) {
+std::shared_ptr<Node> Network::AddNode(
+    std::unique_ptr<fl::Dataset> train_set,
+    std::unique_ptr<fl::Dataset> valid_set,
+    std::unique_ptr<fl::Dataset> test_set) {
   // if Dataset node already exists, just return the pointer to that
   for (auto& node : nodes_) {
     if (node->GetNodeType() == Dataset) {
       return node;
     }
   }
-  nodes_.push_back(std::make_unique<neurons::DataNode>(
-      unique_id_++, std::move(dataset)));
+  nodes_.push_back(std::make_unique<neurons::DataNode>(unique_id_++,
+      std::move(train_set), std::move(valid_set), std::move(test_set)));
   return nodes_.back();
 }
 

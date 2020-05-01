@@ -27,7 +27,9 @@ class Network {
   // Add a DataNode to the network with a unique_ptr to an fl::Dataset.
   // Only adds a new node if no DataNode exists in the network.
   // If a DataNode already exists, returns a pointer to that node.
-  std::shared_ptr<Node> AddNode(std::unique_ptr<fl::Dataset> module);
+  std::shared_ptr<Node> AddNode(std::unique_ptr<fl::Dataset> train_set,
+                                std::unique_ptr<fl::Dataset> valid_set,
+                                std::unique_ptr<fl::Dataset> test_set);
 
   // Add a Link to the network if the input and output form a valid Link.
   // Returns a pointer to the Link if successful. Otherwise, returns nullptr.

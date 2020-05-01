@@ -16,12 +16,12 @@ class InteractiveNeurons : public cinder::app::App {
   void setup() override;
   void update() override;
   void draw() override;
-  void keyDown(cinder::app::KeyEvent) override;
   void quit() override;
 
  private:
   Network network_;
   bool freeze_editor_;
+  const std::string kDataDirectory = getAssetPath("mnist");
 };
 
 }  // namespace neurons

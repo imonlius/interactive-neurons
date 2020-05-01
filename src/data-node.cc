@@ -5,9 +5,12 @@
 
 namespace neurons {
 
-DataNode::DataNode(size_t id,
-    std::unique_ptr<fl::Dataset> dataset) : Node(id, Dataset) {
-  dataset_ = std::move(dataset);
+DataNode::DataNode(size_t id, std::unique_ptr<fl::Dataset> train_set,
+         std::unique_ptr<fl::Dataset> valid_set,
+         std::unique_ptr<fl::Dataset> test_set) : Node(id, Dataset) {
+  train_dataset_ = std::move(train_set);
+  valid_dataset_ = std::move(valid_set);
+  test_dataset_ = std::move(test_set);
 }
 
 // Pretty string

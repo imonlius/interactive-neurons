@@ -8,6 +8,7 @@
 
 #include "imgui_adapter/link-adapter.h"
 #include "imgui_adapter/node-adapter.h"
+#include "mnist-utilities.h"
 
 namespace neurons {
 
@@ -19,9 +20,51 @@ using neurons::adapter::LinkAdapter;
 using neurons::Network;
 using neurons::Link;
 
+void AddDataNode(Network& network,
+    const std::string& data_directory, dim_t batch_size) {
+
+  // Initialize DataNode of the Network
+  af::array train_x;
+  af::array train_y;
+  af::array test_x;
+  af::array test_y;
+  // train_x and train_y are passed as references
+  std::tie(train_x, train_y) =
+      mnist_utilities::load_dataset(data_directory, false);
+  std::tie(test_x, test_y) =
+      mnist_utilities::load_dataset(data_directory,true);
+
+  // Hold out the validation sets
+
+  auto valid_x = train_x(af::span, af::span, 0,
+      af::seq(0, mnist_utilities::kValSize - 1));
+  train_x = train_x(af::span, af::span, 0,
+      af::seq(mnist_utilities::kValSize, mnist_utilities::kTrainSize - 1));
+  auto valid_y = train_y(
+      af::seq(0, mnist_utilities::kValSize - 1));
+  train_y = train_y(
+      af::seq(mnist_utilities::kValSize,mnist_utilities::kTrainSize - 1));
+
+  // Make the BatchDatasets
+  auto train_set = fl::BatchDataset(std::make_shared<fl::TensorDataset>(
+      std::vector<af::array>{train_x, train_y}), batch_size);
+  auto valid_set = fl::BatchDataset(std::make_shared<fl::TensorDataset>(
+      std::vector<af::array>{valid_x, valid_y}), batch_size);
+  auto test_set = fl::BatchDataset(std::make_shared<fl::TensorDataset>(
+      std::vector<af::array>{test_x, test_y}), batch_size);
+
+  network.AddNode(std::make_unique<fl::BatchDataset>(train_set),
+                  std::make_unique<fl::BatchDataset>(valid_set),
+                  std::make_unique<fl::BatchDataset>(test_set));
+
+}
+
 InteractiveNeurons::InteractiveNeurons() {
   network_ = Network();
   freeze_editor_ = false;
+
+  dim_t kBatchSize = 64;
+  AddDataNode(network_, kDataDirectory, kBatchSize);
 }
 
 void InteractiveNeurons::setup() {
@@ -41,12 +84,16 @@ void DrawNodes(const std::vector<NodeAdapter>& nodes) {
     ImGui::TextWrapped("%s", node.node_->prettyString().c_str());
     imnodes::EndNodeTitleBar();
 
-    imnodes::BeginInputAttribute(node.input_id_);
-    ImGui::Text("Input");
-    imnodes::EndAttribute();
+    NodeType type = node.node_->GetNodeType();
+
+    // data nodes should not have an input pin
+    if (type != Dataset) {
+      imnodes::BeginInputAttribute(node.input_id_);
+      ImGui::Text("Input");
+      imnodes::EndAttribute();
+    }
 
     // loss nodes should not have an output pin
-    NodeType type = node.node_->GetNodeType();
     if (!(type == CategoricalCrossEntropy || type == MeanSquaredError ||
           type == MeanAbsoluteError)) {
       imnodes::BeginOutputAttribute(node.output_id_);
@@ -134,9 +181,10 @@ void HandleNodeDeletion(std::vector<NodeAdapter>& nodes, Network& network) {
     while(!selected_nodes.empty()) {
       auto adapter = neurons::adapter::FindOwnerNode(nodes,
           selected_nodes.back());
-      // could occur if user selects node and then presses delete twice
       selected_nodes.pop_back();
-      if (adapter == nullptr) {
+      // nullptr could occur if user selects node and then presses delete twice
+      // do not allow deletion of Dataset node either
+      if (adapter == nullptr || adapter->node_->GetNodeType() == Dataset) {
         continue;
       }
       network.DeleteNode(*adapter->node_);
@@ -636,8 +684,6 @@ void InteractiveNeurons::draw() {
 
   ImGui::End();
 }
-
-void InteractiveNeurons::keyDown(KeyEvent event) { }
 
 void InteractiveNeurons::quit() {
   imnodes::Shutdown();

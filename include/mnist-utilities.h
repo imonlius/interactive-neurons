@@ -25,7 +25,7 @@ af::array load_data(const std::string& im_file,
     const std::vector<long long int>& dims);
 
 std::pair<af::array, af::array> load_dataset(const std::string& data_dir,
-    bool test /* = false */);
+    bool test = false);
 
 }  // namespace neurons::mnist_utilities
 

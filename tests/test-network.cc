@@ -70,8 +70,10 @@ TEST_CASE("Network: Add Nodes: Dataset",
     REQUIRE(network.GetNodes().empty());
     REQUIRE(network.GetDataNode() == nullptr);
 
-    network.AddNode(std::make_unique<fl::TensorDataset>(
-        fl::TensorDataset({X, Y})));
+    network.AddNode(
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})),
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})),
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})));
 
     REQUIRE(network.GetNodes().size() == 1);
     REQUIRE(network.GetNodes().front()->GetNodeType() == neurons::Dataset);
@@ -81,15 +83,20 @@ TEST_CASE("Network: Add Nodes: Dataset",
   SECTION("DataNode is already present in Network") {
     auto network = neurons::Network();
 
-    network.AddNode(std::make_unique<fl::TensorDataset>(
-        fl::TensorDataset({X, Y})));
+    network.AddNode(
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})),
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})),
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})));
 
     REQUIRE(network.GetNodes().size() == 1);
     REQUIRE(network.GetDataNode() == network.GetNodes().front());
 
     // should return the original DataNode
-    REQUIRE(network.AddNode(std::make_unique<fl::TensorDataset>(
-        fl::TensorDataset({X, Y})))->GetId() == 0);
+    REQUIRE(network.AddNode(
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})),
+            std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})),
+            std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y}))
+            )->GetId() == 0);
 
     REQUIRE(network.GetNodes().size() == 1);
   }
@@ -97,8 +104,10 @@ TEST_CASE("Network: Add Nodes: Dataset",
   SECTION("DataNode is deleted and then re-added to Network") {
     auto network = neurons::Network();
 
-    network.AddNode(std::make_unique<fl::TensorDataset>(
-        fl::TensorDataset({X, Y})));
+    network.AddNode(
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})),
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})),
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})));
     REQUIRE(network.GetNodes().size() == 1);
     REQUIRE(network.GetDataNode() == network.GetNodes().front());
 
@@ -106,8 +115,10 @@ TEST_CASE("Network: Add Nodes: Dataset",
     REQUIRE(network.GetNodes().empty());
     REQUIRE(network.GetDataNode() == nullptr);
 
-    network.AddNode(std::make_unique<fl::TensorDataset>(
-        fl::TensorDataset({X, Y})));
+    network.AddNode(
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})),
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})),
+        std::make_unique<fl::TensorDataset>(fl::TensorDataset({X, Y})));
     REQUIRE(network.GetNodes().size() == 1);
     REQUIRE(network.GetDataNode() == network.GetNodes().front());
   }
