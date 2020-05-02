@@ -8,7 +8,7 @@
 
 #include "imgui_adapter/link-adapter.h"
 #include "imgui_adapter/node-adapter.h"
-#include "mnist-utilities.h"
+#include "node_creator.h"
 
 namespace neurons {
 
@@ -20,51 +20,12 @@ using neurons::adapter::LinkAdapter;
 using neurons::Network;
 using neurons::Link;
 
-void SpawnDataNode(Network& network,
-    const std::string& data_directory, dim_t batch_size) {
-
-  // Initialize DataNode of the Network
-  af::array train_x;
-  af::array train_y;
-  af::array test_x;
-  af::array test_y;
-  // train_x and train_y are passed as references
-  std::tie(train_x, train_y) =
-      mnist_utilities::load_dataset(data_directory, false);
-  std::tie(test_x, test_y) =
-      mnist_utilities::load_dataset(data_directory,true);
-
-  // Hold out the validation sets
-
-  auto valid_x = train_x(af::span, af::span, 0,
-      af::seq(0, mnist_utilities::kValSize - 1));
-  train_x = train_x(af::span, af::span, 0,
-      af::seq(mnist_utilities::kValSize, mnist_utilities::kTrainSize - 1));
-  auto valid_y = train_y(
-      af::seq(0, mnist_utilities::kValSize - 1));
-  train_y = train_y(
-      af::seq(mnist_utilities::kValSize,mnist_utilities::kTrainSize - 1));
-
-  // Make the BatchDatasets
-  auto train_set = fl::BatchDataset(std::make_shared<fl::TensorDataset>(
-      std::vector<af::array>{train_x, train_y}), batch_size);
-  auto valid_set = fl::BatchDataset(std::make_shared<fl::TensorDataset>(
-      std::vector<af::array>{valid_x, valid_y}), batch_size);
-  auto test_set = fl::BatchDataset(std::make_shared<fl::TensorDataset>(
-      std::vector<af::array>{test_x, test_y}), batch_size);
-
-  network.AddNode(std::make_unique<fl::BatchDataset>(train_set),
-                  std::make_unique<fl::BatchDataset>(valid_set),
-                  std::make_unique<fl::BatchDataset>(test_set));
-
-}
-
 InteractiveNeurons::InteractiveNeurons() {
   network_ = Network();
   freeze_editor_ = false;
 
   dim_t kBatchSize = 64;
-  SpawnDataNode(network_, kDataDirectory, kBatchSize);
+  spawner::SpawnMnistDataNode(network_, kDataDirectory, kBatchSize);
 }
 
 void InteractiveNeurons::setup() {
@@ -200,11 +161,8 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
   }
 
   static ImVec2 mouse_position;
-
   bool node_created = false;
-
-  // add_node will be filled with the NodeType to be added if desired
-  NodeType add_node = Dummy;
+  static NodeType spawn_node = Dummy;
 
   if (ImGui::BeginPopup("Add Node")) {
     // record mouse position on right click
@@ -212,441 +170,53 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
 
     // Activation nodes
     if (ImGui::BeginMenu("Activation")) {
-      // Activation nodes require no parameters, so we can spawn it here
-      // without any additional pop up menus
       const std::vector<NodeType> activations =
           {Sigmoid, Tanh, HardTanh, ReLU, LeakyReLU, ELU,
            ThresholdReLU, GatedLinearUnit, LogSoftmax, Log};
-      NodeType spawn_type = Dummy;
       for (auto activation : activations) {
         if (ImGui::MenuItem(NodeTypeToString(activation).c_str())) {
-          spawn_type = activation;
+          spawn_node = activation;
         }
-      }
-
-      std::unique_ptr<fl::Module> module;
-      switch (spawn_type) {
-        case Sigmoid:
-          module = std::make_unique<fl::Sigmoid>(fl::Sigmoid());
-          break;
-        case Tanh:
-          module = std::make_unique<fl::Tanh>(fl::Tanh());
-          break;
-        case HardTanh:
-          module = std::make_unique<fl::HardTanh>(fl::HardTanh());
-          break;
-        case ReLU:
-          module = std::make_unique<fl::ReLU>(fl::ReLU());
-          break;
-        case LeakyReLU:
-          module = std::make_unique<fl::LeakyReLU>(fl::LeakyReLU());
-          break;
-        case ELU:
-          module = std::make_unique<fl::ELU>(fl::ELU());
-          break;
-        case ThresholdReLU:
-          module = std::make_unique<fl::ThresholdReLU>(fl::ThresholdReLU());
-          break;
-        case GatedLinearUnit:
-          module = std::make_unique<fl::GatedLinearUnit>(
-              fl::GatedLinearUnit());
-          break;
-        case LogSoftmax:
-          module = std::make_unique<fl::LogSoftmax>(fl::LogSoftmax());
-          break;
-        case Log:
-          module = std::make_unique<fl::Log>(fl::Log());
-          break;
-        case Dummy:
-          // if no activation node is selected
-          break;
-        default:
-          throw std::runtime_error("Unexpected activation type.");
-      }
-      if (module) {
-        // if module has been created
-        network.AddNode(spawn_type, std::move(module));
-        node_created = true;
       }
       ImGui::EndMenu();
     }
 
     // Loss nodes. Only show if no Loss node exists (short-circuit eval.)
     if (network.GetLossNode() == nullptr && ImGui::BeginMenu("Loss")) {
-      // Loss nodes require no parameters, so we can spawn it here
-      // without any additional pop up menus
       const std::vector<NodeType> losses =
           {CategoricalCrossEntropy, MeanAbsoluteError, MeanSquaredError};
-      NodeType spawn_type = Dummy;
       for (auto loss : losses) {
         if (ImGui::MenuItem(NodeTypeToString(loss).c_str())) {
-          spawn_type = loss;
+          spawn_node = loss;
         }
-      }
-      std::unique_ptr<fl::BinaryModule> module;
-      switch (spawn_type) {
-        case CategoricalCrossEntropy:
-          module = std::make_unique<fl::CategoricalCrossEntropy>(
-              fl::CategoricalCrossEntropy());
-          break;
-        case MeanAbsoluteError:
-          module = std::make_unique<fl::MeanAbsoluteError>(
-              fl::MeanAbsoluteError());
-          break;
-        case MeanSquaredError:
-          module = std::make_unique<fl::MeanSquaredError>(
-              fl::MeanSquaredError());
-          break;
-        case Dummy:
-          // if no loss node is selected
-          break;
-        default:
-          throw std::runtime_error("Unexpected loss type.");
-      }
-      if (module) {
-        // if module has been created
-        network.AddNode(spawn_type, std::move(module));
-        node_created = true;
       }
       ImGui::EndMenu();
     }
 
-    // These nodes require parameters, so pop up a window for config
-    const std::vector types = {BatchNorm, LayerNorm, Dropout, View,
-                               Conv2D, Pool2D, Linear};
+    // Every other Node type
+    const std::vector<NodeType> types =
+        {BatchNorm, LayerNorm, Dropout, View, Conv2D, Pool2D, Linear};
     for (auto type : types) {
       if (ImGui::MenuItem(NodeTypeToString(type).c_str())) {
-        add_node = type;
-      }
-    }
-
-    ImGui::EndPopup();
-  }
-
-  // open pop-up based on desired node type to be added
-  if (add_node != Dummy) {
-    ImGui::OpenPopup(NodeTypeToString(add_node).c_str());
-    freeze_editor = true;
-  }
-
-  ImVec2 window_size = ImVec2(300, 300);
-
-  ImGui::SetNextWindowContentSize(window_size);
-  if (ImGui::BeginPopupModal("BatchNorm")) {
-    static int int_args[2]; // must be static to be preserved between draws
-    static double double_args[2];
-    static bool bool_args[2];
-    const std::string labels[] = {"Feature Axis", "Feature Size",
-                                  "Momentum", "Epsilon", "Affine",
-                                  "Track Stats"};
-    for (size_t i = 0; i < 6; ++i) {
-      ImGui::Text("%s", labels[i].c_str());
-      std::string label = "##" + labels[i]; // ## makes invis. label
-      if (i < 2) {
-        ImGui::InputInt(label.c_str(), &int_args[i]);
-      } else if (i < 4) {
-        // subtract 2 from index to account for separate array
-        ImGui::InputDouble(label.c_str(), &double_args[i - 2]);
-      } else {
-        // subtract 4 from index to account for separate array
-        ImGui::Checkbox(label.c_str(), &bool_args[i - 4]);
-      }
-    }
-
-    if (ImGui::Button("Cancel")) {
-      freeze_editor = false;
-      ImGui::CloseCurrentPopup();
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("Add Node")) {
-      // arguments valid if Feature Axis >= 0 and Feature Size > 0
-      bool args_valid = (int_args[0] >= 0 && int_args[1] > 0);
-
-      if (args_valid) {
-        network.AddNode(BatchNorm, std::make_unique<fl::BatchNorm>(
-            fl::BatchNorm(int_args[0], int_args[1], double_args[0],
-                double_args[1], bool_args[0], bool_args[1])));
-        node_created = true;
-        ImGui::CloseCurrentPopup();
+        spawn_node = type;
       }
     }
     ImGui::EndPopup();
   }
 
-  ImGui::SetNextWindowContentSize(window_size);
-  if (ImGui::BeginPopupModal("LayerNorm")) {
-    static int axis; // must be static to be preserved between draws
-    static double epsilon;
-    static bool affine;
-    // for axisSize, uses fl::kLnVariableAxisSize
-    const std::string labels[] = {"Normalization Axis", "Epsilon", "Affine"};
-
-    ImGui::Text("%s", labels[0].c_str());
-    ImGui::InputInt(("##" + labels[0]).c_str(), &axis);
-
-    ImGui::Text("%s", labels[1].c_str());
-    ImGui::InputDouble(("##" + labels[1]).c_str(), &epsilon);
-
-    ImGui::Text("%s", labels[2].c_str());
-    ImGui::Checkbox(("##" + labels[2]).c_str(), &affine);
-
-    if (ImGui::Button("Cancel")) {
-      freeze_editor = false;
-      ImGui::CloseCurrentPopup();
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("Add Node")) {
-      // arguments valid if Feature Axis >= 0
-      bool args_valid = (axis >= 0);
-
-      if (args_valid) {
-        network.AddNode(LayerNorm, std::make_unique<fl::LayerNorm>(
-            fl::LayerNorm(axis, epsilon, affine, fl::kLnVariableAxisSize)));
-        node_created = true;
-        ImGui::CloseCurrentPopup();
-      }
-    }
-    ImGui::EndPopup();
+  if (spawn_node != Dummy) {
+    node_created = spawner::SpawnModuleNode(network, spawn_node, freeze_editor);
   }
 
-  ImGui::SetNextWindowContentSize(window_size);
-  if (ImGui::BeginPopupModal("Dropout")) {
-    static double ratio; // must be static to be preserved between draws
-    const std::string labels[] = {"Dropout Ratio"};
-
-    ImGui::Text("%s", labels[0].c_str());
-    // ## makes invis. label
-    ImGui::InputDouble(("##" +  labels[0]).c_str(), &ratio);
-
-    if (ImGui::Button("Cancel")) {
-      freeze_editor = false;
-      ImGui::CloseCurrentPopup();
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("Add Node")) {
-      // Check that arguments are valid
-      bool args_valid = (ratio >= 0 && ratio < 1);
-
-      if (args_valid) {
-        network.AddNode(Dropout,std::make_unique<fl::Dropout>(
-            fl::Dropout(ratio)));
-        node_created = true;
-        ImGui::CloseCurrentPopup();
-      }
-    }
-    ImGui::EndPopup();
-  }
-
-  ImGui::SetNextWindowContentSize(window_size);
-  if (ImGui::BeginPopupModal("View")) {
-    static int dims[4];
-    const std::string labels[] = {"Dimension 1", "Dimension 2",
-                                  "Dimension 3", "Dimenison 4"};
-    for (size_t i = 0; i < 4; ++i ) {
-      ImGui::Text("%s", labels[i].c_str());
-      std::string label = "##" + labels[i]; // ## makes invis. label
-      ImGui::InputInt(label.c_str(), &dims[i]);
-    }
-
-    if (ImGui::Button("Cancel")) {
-      freeze_editor = false;
-      ImGui::CloseCurrentPopup();
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("Add Node")) {
-      // Check that arguments are valid
-      bool args_valid = true;
-
-      // View must have either nonnegative or -1 arguments
-      size_t num_negative_one = 0;
-      for (int dim : dims) {
-        if (dim == -1) {
-          ++num_negative_one;
-        } else if (dim < 0) {
-          args_valid = false;
-        }
-      }
-
-      // View can only have one -1 argument
-      if (num_negative_one > 1) {
-        args_valid = false;
-      }
-
-      if (args_valid) {
-        network.AddNode(View, std::make_unique<fl::View>(
-            fl::View(af::dim4(
-                dims[0], dims[1], dims[2], dims[3]))));
-        node_created = true;
-        ImGui::CloseCurrentPopup();
-      }
-    }
-    ImGui::EndPopup();
-  }
-
-  ImGui::SetNextWindowContentSize(window_size);
-  if (ImGui::BeginPopupModal("Conv2D")) {
-
-    static int n_args[10]; // must be static to be preserved between draws
-    static bool bias;
-    const std::string labels[] = {"Input Channels", "Output Channels",
-                                  "Kernel X-dim Size", "Kernel Y-dim Size",
-                                  "Conv X-dim Stride", "Conv Y-dim Stride",
-                                  "Zero-Padding X-dim", "Zero-Padding Y-dim",
-                                  "Conv X-dim Dilation", "Conv Y-Dim Dilation"};
-
-    for (size_t i = 0; i < 10; ++i) {
-      ImGui::Text("%s", labels[i].c_str());
-      std::string label = "##" + labels[i]; // ## makes invis. label
-      ImGui::InputInt(label.c_str(), &n_args[i]);
-    }
-
-    ImGui::Checkbox("Learnable Bias: ", &bias);
-
-    if (ImGui::Button("Cancel")) {
-      freeze_editor = false;
-      ImGui::CloseCurrentPopup();
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("Add Node")) {
-      // Check that arguments are valid
-      bool args_valid = true;
-      for (size_t i = 0; i < 10; ++i) {
-        // zero-padding can be >= -1, everything else must be positive.
-        // zero-padding of -1 uses smallest possible padding such that
-        // out_size = ceil(in_size / stride)
-        if (!(n_args[i] > 0 || ((i == 6 || i == 7) && n_args[i] >= -1))) {
-          args_valid = false;
-        }
-      }
-
-      if (args_valid) {
-        network.AddNode(Conv2D,std::make_unique<fl::Conv2D>(
-            fl::Conv2D(n_args[0], n_args[1], n_args[2],
-                       n_args[3],n_args[4], n_args[5], n_args[6],
-                       n_args[7], n_args[8],n_args[9], bias)));
-        node_created = true;
-        ImGui::CloseCurrentPopup();
-      }
-    }
-    ImGui::EndPopup();
-  }
-
-  ImGui::SetNextWindowContentSize(window_size);
-  if (ImGui::BeginPopupModal("Pool2D")) {
-
-    static int n_args[6]; // must be static to be preserved between draws
-    const std::string labels[] = {
-        "Pooling Window X-dim", "Pooling Window Y-dim",
-        "Stride X-dim", "Stride Y-dim",
-        "Zero-Padding X-dim", "Zero-Padding Y-dim", "Pooling Mode"};
-
-    static std::string pooling_mode;
-    const std::string modes[] = {"MAX", "AVG_INCLUDE_PADDING",
-                                 "AVG_EXCLUDE_PADDING"};
-
-    for (size_t i = 0; i < 6; ++i) {
-      ImGui::Text("%s", labels[i].c_str());
-      std::string label = "##" + labels[i]; // ## makes invis. label
-      ImGui::InputInt(label.c_str(), &n_args[i]);
-    }
-
-    // Get the Pooling Mode from a dropdown selection
-    // derived from github.com/ocornut/imgui/issues/1658
-    ImGui::Text("%s", labels[6].c_str());
-    if (ImGui::BeginCombo(("##" + labels[6]).c_str(), pooling_mode.data())) {
-      for (const auto & mode : modes) {
-        bool is_selected = (pooling_mode == mode);
-        if (ImGui::Selectable(mode.c_str(), is_selected)) {
-          pooling_mode = mode;
-        }
-        if (is_selected) {
-          // sets the initial focus of the list when opened
-          ImGui::SetItemDefaultFocus();
-        }
-      }
-      ImGui::EndCombo();
-    }
-
-    // translate pooling_mode string into PoolingMode
-    fl::PoolingMode pooling;
-    if (pooling_mode == "MAX") {
-      pooling = fl::PoolingMode::MAX;
-    } else if (pooling_mode == "AVG_INCLUDE_POOLING") {
-      pooling = fl::PoolingMode::AVG_INCLUDE_PADDING;
-    } else {
-      pooling = fl::PoolingMode::AVG_EXCLUDE_PADDING;
-    }
-
-    if (ImGui::Button("Cancel")) {
-      freeze_editor = false;
-      ImGui::CloseCurrentPopup();
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("Add Node")) {
-      // Check that arguments are valid
-      // All fields must be greater than 0, except padding which must be >= -1
-      // zero-padding of -1 uses smallest possible padding such that
-      // out_size = ceil(in_size / stride)
-      bool args_valid = n_args[0] > 0 && n_args[1] > 0 && n_args[2] > 0 &&
-          n_args[3] > 0 && n_args[4] >= -1 && n_args[5] >= -1;
-
-      if (args_valid) {
-        network.AddNode(Pool2D, std::make_unique<fl::Pool2D>(
-            fl::Pool2D(n_args[0], n_args[1], n_args[2],
-                       n_args[3],n_args[4], n_args[5], pooling)));
-        node_created = true;
-        ImGui::CloseCurrentPopup();
-      }
-    }
-    ImGui::EndPopup();
-  }
-
-  ImGui::SetNextWindowContentSize(window_size);
-  if (ImGui::BeginPopupModal("Linear")) {
-    static int n_args[2]; // must be static to be preserved between draws
-    static bool bias;
-    const std::string labels[] = {"Input Size", "Output Size"};
-    for (size_t i = 0; i < 2; ++i) {
-      ImGui::Text("%s", labels[i].c_str());
-      std::string label = "##" + labels[i]; // ## makes invis. label
-      ImGui::InputInt(label.c_str(), &n_args[i]);
-    }
-
-    ImGui::Checkbox("Learnable Bias: ", &bias);
-
-    if (ImGui::Button("Cancel")) {
-      freeze_editor = false;
-      ImGui::CloseCurrentPopup();
-    }
-
-    ImGui::SameLine();
-    if (ImGui::Button("Add Node")) {
-      // Check that arguments are valid
-      bool args_valid = (n_args[0] > 0 && n_args[1] > 0);
-
-      if (args_valid) {
-        network.AddNode(Linear,std::make_unique<fl::Linear>(
-            fl::Linear(n_args[0], n_args[1], bias)));
-        node_created = true;
-        ImGui::CloseCurrentPopup();
-      }
-    }
-    ImGui::EndPopup();
+  // if Node Creator has relinquished control, reset the spawn node
+  if (!freeze_editor) {
+    spawn_node = Dummy;
   }
 
   if (node_created) {
     // set the position of the spawned node to the cursor position
     auto adapter = NodeAdapter(network.GetNodes().back());
     imnodes::SetNodeScreenSpacePos(adapter.id_, mouse_position);
-
-    // unfreeze the editor to allow graph editing
-    freeze_editor = false;
   }
 }
 
