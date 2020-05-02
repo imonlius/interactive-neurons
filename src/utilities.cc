@@ -200,7 +200,6 @@ size_t CountConnectedComponents(const NodeDeque& nodes,
   return connected_components;
 }
 
-// Returns whether every node that requires an input has an input link.
 bool AreNodeInputsSatisfied(const NodeDeque& nodes,
     const std::deque<Link>& links) {
   NodeDeque nodes_copy(nodes);
@@ -222,6 +221,36 @@ bool AreNodeInputsSatisfied(const NodeDeque& nodes,
   // if they are not data nodes (which do not have input), they are unsatisfied
   for (const auto& node : nodes_copy) {
     if (node->GetNodeType() != Dataset) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+bool AreNodeOutputsSatisfied(const NodeDeque& nodes,
+                            const std::deque<Link>& links) {
+  NodeDeque nodes_copy(nodes);
+
+  // go through every link to eliminate nodes that have a link from them
+  for (const auto& link : links) {
+    auto it = nodes_copy.begin();
+    while (it != nodes_copy.end()) {
+      // this does not allow nodes to be satisfy themselves as their own output
+      if (*it == link.input_ && *it != link.output_) {
+        it = nodes_copy.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
+
+  // remaining nodes in nodes_copy do not have a link leading to them
+  // if they are not loss nodes (which do not have output), they are unsatisfied
+  for (const auto& node : nodes_copy) {
+    auto type = node->GetNodeType();
+    if (type != CategoricalCrossEntropy && type != MeanAbsoluteError &&
+        type != MeanSquaredError) {
       return false;
     }
   }

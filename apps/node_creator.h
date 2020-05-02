@@ -16,8 +16,6 @@ bool SpawnMnistDataNode(neurons::Network& network,
 
 // Spawn a Node of the passed Node type. Returns true if successful. Freezes
 // editor when called, unfreezes editor once action is completed.
-// Currently supports: BatchNorm, LayerNorm, Dropout, View,
-// Conv2D, Pool2D, Linear
 bool SpawnModuleNode(neurons::Network& network, neurons::NodeType type,
     bool& freeze_editor);
 

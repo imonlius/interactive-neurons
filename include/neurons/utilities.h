@@ -32,6 +32,9 @@ size_t CountConnectedComponents(const NodeDeque& nodes,
 bool AreNodeInputsSatisfied(const NodeDeque& nodes,
                             const std::deque<Link>& links);
 
+// Returns whether every node that provides an output has an output link.
+bool AreNodeOutputsSatisfied(const NodeDeque& nodes,
+                            const std::deque<Link>& links);
 
 }  // namespace neurons::utilities
 

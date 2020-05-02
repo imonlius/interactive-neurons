@@ -9,6 +9,7 @@ using neurons::Node;
 using neurons::DataNode;
 using neurons::ModuleNode;
 using neurons::utilities::AreNodeInputsSatisfied;
+using neurons::utilities::AreNodeOutputsSatisfied;
 using neurons::utilities::ContainsDirectedCycle;
 using neurons::utilities::CountConnectedComponents;
 using neurons::utilities::NodesAndLinksConsistent;
@@ -315,7 +316,6 @@ TEST_CASE("Utilities: CountConnectedComponents",
  * bool AreNodeInputsSatisfied(const NodeDeque& nodes,
                             const std::deque<Link>& links);
  */
-
 TEST_CASE("Utilities: AreNodeInputsSatisfied",
     "[Utilities][AreNodeInputsSatisfied]") {
 
@@ -390,6 +390,87 @@ TEST_CASE("Utilities: AreNodeInputsSatisfied",
     neurons::NodeDeque nodes = {node_one, node_two, node_three};
 
     REQUIRE_FALSE(AreNodeInputsSatisfied(nodes, links));
+  }
+}
+
+/*
+ * bool AreNodeOutputsSatisfied(const NodeDeque& nodes,
+                            const std::deque<Link>& links);
+ */
+TEST_CASE("Utilities: AreNodeOutputsSatisfied",
+          "[Utilities][AreNodeOutputsSatisfied]") {
+
+  SECTION("No nodes or links") {
+    REQUIRE(AreNodeOutputsSatisfied(neurons::NodeDeque(), std::deque<Link>()));
+  }
+
+  SECTION("All module nodes have valid outputs") {
+    auto node_one =
+        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+    auto node_two =
+        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    auto node_three =
+        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+
+    std::deque<Link> links;
+    links.emplace_back(3, node_one, node_two);
+    links.emplace_back(4, node_two, node_three);
+    links.emplace_back(5, node_three, node_one);
+    neurons::NodeDeque nodes = {node_one, node_two, node_three};
+
+    REQUIRE(AreNodeOutputsSatisfied(nodes, links));
+  }
+
+  SECTION("All module nodes have valid outputs + one output-less loss node") {
+    auto node_one = std::make_shared<ModuleNode>(0,
+        neurons::Conv2D, nullptr);
+    auto node_two = std::make_shared<ModuleNode>(1,
+        neurons::Conv2D, nullptr);
+    auto node_three = std::make_shared<ModuleNode>(2,
+        neurons::Conv2D, nullptr);
+    auto node_four = std::make_shared<ModuleNode>(3,
+        neurons::CategoricalCrossEntropy, nullptr);
+
+    std::deque<Link> links;
+    links.emplace_back(4, node_two, node_four);
+    links.emplace_back(5, node_three, node_four);
+    links.emplace_back(6, node_one, node_four);
+    neurons::NodeDeque nodes = {node_one, node_two, node_three, node_four};
+
+    REQUIRE(AreNodeOutputsSatisfied(nodes, links));
+  }
+
+  SECTION("Some module nodes try to satisfy their own outputs") {
+    auto node_one =
+        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+    auto node_two =
+        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    auto node_three =
+        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+
+    std::deque<Link> links;
+    links.emplace_back(4, node_two, node_three);
+    links.emplace_back(5, node_three, node_two);
+    links.emplace_back(6, node_one, node_one);
+    neurons::NodeDeque nodes = {node_one, node_two, node_three};
+
+    REQUIRE_FALSE(AreNodeInputsSatisfied(nodes, links));
+  }
+
+  SECTION("Some module nodes lack outputs") {
+    auto node_one =
+        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+    auto node_two =
+        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    auto node_three =
+        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+
+    std::deque<Link> links;
+    links.emplace_back(4, node_two, node_three);
+    links.emplace_back(5, node_three, node_three);
+    neurons::NodeDeque nodes = {node_one, node_two, node_three};
+
+    REQUIRE_FALSE(AreNodeOutputsSatisfied(nodes, links));
   }
 
 }
