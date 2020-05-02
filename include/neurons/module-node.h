@@ -2,8 +2,9 @@
 #ifndef FINALPROJECT_NEURONS_MODULE_NODE_H_
 #define FINALPROJECT_NEURONS_MODULE_NODE_H_
 
-#include "node.h"
 #include <flashlight/flashlight.h>
+
+#include "node.h"
 
 namespace neurons {
 

@@ -2,6 +2,8 @@
 #ifndef FINALPROJECT_NEURONS_LINK_H_
 #define FINALPROJECT_NEURONS_LINK_H_
 
+#include <utility>
+
 #include "module-node.h"
 
 namespace neurons {
@@ -19,7 +21,7 @@ class Link {
 
   // Public constructor. Pass shared_ptr by value as Links will share ownership.
   Link(size_t id, std::shared_ptr<Node> input, std::shared_ptr<Node> output):
-      input_(input), output_(output), id_(id) { };
+      input_(std::move(input)), output_(std::move(output)), id_(id) { };
 
  private:
 

@@ -1,12 +1,13 @@
 // Copyright (c) 2020 Simon Liu. All rights reserved.
 
-#ifndef FINALPROJECT_IMGUI_ADAPTER_ADAPTER_H
-#define FINALPROJECT_IMGUI_ADAPTER_ADAPTER_H
+#ifndef FINALPROJECT_IMGUI_ADAPTER_NODE_ADAPTER_H
+#define FINALPROJECT_IMGUI_ADAPTER_NODE_ADAPTER_H
 
-#include "neurons/node.h"
-#include <vector>
 #include <deque>
 #include <memory>
+#include <vector>
+
+#include "neurons/node.h"
 
 namespace neurons::adapter {
 
@@ -29,8 +30,7 @@ struct NodeAdapter {
 
 
 // Return a vector of NodeAdapters wrapped around the passed nodes
-std::vector<NodeAdapter> BuildNodeAdapters(
-    std::deque<std::shared_ptr<Node>>& nodes);
+std::vector<NodeAdapter> BuildNodeAdapters(NodeDeque& nodes);
 
 // Returns a pointer to a Node in the passed vector that owns the node ID.
 // If multiple nodes have the node ID, will return the first one.
@@ -44,4 +44,4 @@ NodeAdapter* FindPinOwner(std::vector<NodeAdapter>& nodes, size_t id);
 
 }  // namespace neurons::adapter
 
-#endif  // FINALPROJECT_IMGUI_ADAPTER_ADAPTER_H
+#endif  // FINALPROJECT_IMGUI_ADAPTER_NODE_ADAPTER_H

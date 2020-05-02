@@ -1,6 +1,6 @@
 // Copyright (c) 2020 Simon Liu. All rights reserved.
-#ifndef FINALPROJECT_NEURONS_DATANODE_H_
-#define FINALPROJECT_NEURONS_DATANODE_H_
+#ifndef FINALPROJECT_NEURONS_DATA_NODE_H_
+#define FINALPROJECT_NEURONS_DATA_NODE_H_
 
 #include <flashlight/flashlight.h>
 
@@ -29,4 +29,4 @@ class DataNode : public Node {
 
 }  // namespace neurons
 
-#endif // FINALPROJECT_NEURONS_NODE_H_
+#endif // FINALPROJECT_NEURONS_DATA_NODE_H_

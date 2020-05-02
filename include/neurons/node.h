@@ -2,6 +2,8 @@
 #ifndef FINALPROJECT_NEURONS_NODE_H_
 #define FINALPROJECT_NEURONS_NODE_H_
 
+#include <deque>
+#include <memory>
 #include <string>
 
 namespace neurons {
@@ -42,6 +44,8 @@ class Node {
   NodeType type_;
 
 };
+
+typedef std::deque<std::shared_ptr<Node>> NodeDeque;
 
 }  // namespace neurons
 

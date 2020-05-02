@@ -2,6 +2,7 @@
 
 #include "imgui_adapter/node-adapter.h"
 #include "neurons/module-node.h"
+#include "neurons/node.h"
 #include <catch2/catch.hpp>
 
 /*
@@ -34,7 +35,7 @@ TEST_CASE("NodeAdapter: Constructor", "[NodeAdapter][Constructor]") {
 TEST_CASE("NodeAdapter: BuildNodeAdapters",
     "[NodeAdapter][BuildNodeAdapters]") {
 
-  std::deque<std::shared_ptr<neurons::Node>> nodes;
+  neurons::NodeDeque nodes;
 
   SECTION("Empty vector") {
     REQUIRE(neurons::adapter::BuildNodeAdapters(nodes).empty());
@@ -88,7 +89,7 @@ TEST_CASE("NodeAdapter: FindPinOwner", "[NodeAdapter][FindPinOwner]") {
   auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
   auto module_two = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
 
-  std::deque<std::shared_ptr<neurons::Node>> nodes;
+  neurons::NodeDeque nodes;
   nodes.push_back(std::make_unique<neurons::ModuleNode>(
       neurons::ModuleNode(node_id, neurons::NodeType::Conv2D,
           std::make_unique<fl::Conv2D>(module))));
@@ -126,7 +127,7 @@ TEST_CASE("NodeAdapter: FindOwnerNode", "[NodeAdapter][FindOwnerNode]") {
   auto module = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
   auto module_two = fl::Conv2D(1, 1, 1, 1, 1, 1, 1, 1);
 
-  std::deque<std::shared_ptr<neurons::Node>> nodes;
+  neurons::NodeDeque nodes;
   nodes.push_back(std::make_unique<neurons::ModuleNode>(
       neurons::ModuleNode(node_id, neurons::NodeType::Conv2D,
           std::make_unique<fl::Conv2D>(module))));

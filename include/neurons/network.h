@@ -2,9 +2,10 @@
 #ifndef FINALPROJECT_NEURONS_NETWORK_H
 #define FINALPROJECT_NEURONS_NETWORK_H
 
-#include "link.h"
 #include "data-node.h"
+#include "link.h"
 #include "module-node.h"
+#include "node.h"
 
 namespace neurons {
 
@@ -13,7 +14,7 @@ class Network {
  public:
 
   // Retrieve std::deque of Nodes.
-  [[nodiscard]] std::deque<std::shared_ptr<Node>>& GetNodes();
+  [[nodiscard]] NodeDeque& GetNodes();
 
   // Retrieve std::deque of Links.
   [[nodiscard]] std::deque<Link>& GetLinks();
@@ -55,7 +56,7 @@ class Network {
   size_t unique_id_;
 
   // Deque of all the Node pointers in the network.
-  std::deque<std::shared_ptr<Node>> nodes_;
+  NodeDeque nodes_;
 
   // Deque of all the Links in the network.
   std::deque<Link> links_;

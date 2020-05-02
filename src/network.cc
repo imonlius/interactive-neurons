@@ -5,7 +5,7 @@
 namespace neurons {
 
 // Helper function, returns whether the deque contains the Node
-bool ContainsNode(const std::deque<std::shared_ptr<Node>>& nodes,
+bool ContainsNode(const NodeDeque& nodes,
                   const std::shared_ptr<Node> node) {
   for (const auto& it : nodes) {
     if(it == node) {
@@ -89,7 +89,7 @@ std::deque<Link>& Network::GetLinks() {
   return links_;
 }
 
-std::deque<std::shared_ptr<Node>>& Network::GetNodes() {
+NodeDeque& Network::GetNodes() {
   return nodes_;
 }
 

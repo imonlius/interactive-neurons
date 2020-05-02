@@ -12,8 +12,7 @@ NodeAdapter::NodeAdapter(const std::shared_ptr<Node>& node) {
   output_id_ = kIdMultiplier * node->GetId() + 2;
 }
 
-std::vector<NodeAdapter> BuildNodeAdapters(
-    std::deque<std::shared_ptr<Node>>& nodes) {
+std::vector<NodeAdapter> BuildNodeAdapters(NodeDeque& nodes) {
   auto adapters = std::vector<NodeAdapter>();
   adapters.reserve(nodes.size());
   for (auto& node : nodes) {
