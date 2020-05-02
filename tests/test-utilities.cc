@@ -9,9 +9,10 @@ using neurons::Node;
 using neurons::DataNode;
 using neurons::ModuleNode;
 using neurons::utilities::AreNodeInputsSatisfied;
+using neurons::utilities::ContainsDirectedCycle;
 using neurons::utilities::CountConnectedComponents;
-using neurons::utilities::ContainsNonTrivialStrongComponent;
 using neurons::utilities::NodesAndLinksConsistent;
+using neurons::utilities::TopologicalSort;
 
 /*
  * bool NodesAndLinksConsistent(const NodeDeque& nodes,
@@ -111,18 +112,102 @@ TEST_CASE("Utilities: NodesAndLinksConsistent",
 }
 
 /*
- * bool ContainsStrongComponent(const std::deque<Link>& links);
+ * NodeDeque TopologicalSort(const NodeDeque& nodes,
+    const std::deque<Link>& links);
  */
+TEST_CASE("Utilities: TopologicalSort",
+    "[Utilities][TopologicalSort]") {
 
-TEST_CASE("Utilities: ContainsStrongComponent",
-    "[Utilities][ContainsStrongComponent]") {
+  SECTION("Nodes without links") {
+    const auto node_one =
+        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+    const auto node_two =
+        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    const neurons::NodeDeque nodes = {node_one, node_two};
 
-  SECTION("No components") {
-    REQUIRE_FALSE(ContainsNonTrivialStrongComponent(
-        neurons::NodeDeque(), std::deque<Link>()));
+    const neurons::NodeDeque sorted =
+        TopologicalSort(nodes, std::deque<Link>());
+    REQUIRE(sorted.size() == 2);
+    // check that sorted contains node_one and node_two, any order
+    REQUIRE(std::find(sorted.begin(), sorted.end(), node_one) != sorted.end());
+    REQUIRE(std::find(sorted.begin(), sorted.end(), node_two) != sorted.end());
   }
 
-  SECTION("Contains a strongly connected component") {
+  SECTION("One prime dependency") {
+    const auto node_one =
+        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+    const auto node_two =
+        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    const auto node_three =
+        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+    const auto node_four =
+        std::make_shared<ModuleNode>(3, neurons::Conv2D, nullptr);
+    const neurons::NodeDeque nodes =
+        {node_one, node_two, node_three, node_four};
+
+
+    std::deque<Link> links;
+    links.emplace_back(4, node_one, node_two);
+    links.emplace_back(5, node_two, node_three);
+    links.emplace_back(6, node_three, node_four);
+
+    const neurons::NodeDeque sorted = TopologicalSort(nodes, links);
+    REQUIRE(sorted.size() == 4);
+    REQUIRE(sorted.at(0) == node_one);
+    REQUIRE(sorted.at(1) == node_two);
+    REQUIRE(sorted.at(2) == node_three);
+    REQUIRE(sorted.at(3) == node_four);
+  }
+
+  SECTION("Two prime dependencies") {
+    const auto node_one =
+        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+    const auto node_two =
+        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    const auto node_three =
+        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+    const auto node_four =
+        std::make_shared<ModuleNode>(3, neurons::Conv2D, nullptr);
+    const neurons::NodeDeque nodes =
+        {node_one, node_two, node_three, node_four};
+
+
+    std::deque<Link> links;
+    links.emplace_back(4, node_one, node_two);
+    links.emplace_back(5, node_three, node_four);
+
+    const neurons::NodeDeque sorted = TopologicalSort(nodes, links);
+    // require that index_two > index_one and index_four > index_three
+    // and that index_one and index_three >= 0 (any order)
+    auto index_one = std::distance(sorted.begin(),
+        std::find(sorted.begin(), sorted.end(), node_one));
+    auto index_two = std::distance(sorted.begin(),
+        std::find(sorted.begin(), sorted.end(), node_two));
+    auto index_three = std::distance(sorted.begin(),
+        std::find(sorted.begin(), sorted.end(), node_three));
+    auto index_four = std::distance(sorted.begin(),
+        std::find(sorted.begin(), sorted.end(), node_four));
+
+    REQUIRE(index_one >= 0);
+    REQUIRE(index_three >= 0);
+    REQUIRE(index_two > index_one);
+    REQUIRE(index_four > index_three);
+  }
+
+}
+
+/*
+ * bool ContainsDirectedCycle(const std::deque<Link>& links);
+ */
+TEST_CASE("Utilities: ContainsDirectedCycle",
+    "[Utilities][ContainsDirectedCycle]") {
+
+  SECTION("No components") {
+    REQUIRE_FALSE(
+        ContainsDirectedCycle(neurons::NodeDeque(), std::deque<Link>()));
+  }
+
+  SECTION("Contains a directed cycle") {
     auto node_one =
         std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
     auto node_two =
@@ -132,10 +217,10 @@ TEST_CASE("Utilities: ContainsStrongComponent",
     std::deque<Link> links;
     links.emplace_back(2, node_one, node_two);
     links.emplace_back(3, node_two, node_one);
-    REQUIRE(ContainsNonTrivialStrongComponent(nodes, links));
+    REQUIRE(ContainsDirectedCycle(nodes, links));
   }
 
-  SECTION("Contains multiple strongly connected components") {
+  SECTION("Contains multiple directed cycles") {
     auto node_one =
         std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
     auto node_two =
@@ -154,7 +239,7 @@ TEST_CASE("Utilities: ContainsStrongComponent",
     links.emplace_back(6, node_two, node_three);
     links.emplace_back(7, node_four, node_five);
     links.emplace_back(8, node_five, node_four);
-    REQUIRE(ContainsNonTrivialStrongComponent(nodes, links));
+    REQUIRE(ContainsDirectedCycle(nodes, links));
   }
 
   SECTION("Contains only a weakly connected component") {
@@ -170,7 +255,7 @@ TEST_CASE("Utilities: ContainsStrongComponent",
     links.emplace_back(3, node_one, node_two);
     links.emplace_back(4, node_one, node_three);
     links.emplace_back(5, node_two, node_three);
-    REQUIRE_FALSE(ContainsNonTrivialStrongComponent(nodes, links));
+    REQUIRE_FALSE(ContainsDirectedCycle(nodes, links));
   }
 }
 
@@ -178,7 +263,6 @@ TEST_CASE("Utilities: ContainsStrongComponent",
  * size_t CountConnectedComponents(const NodeDeque& nodes,
                                 const std::deque<Link>& links);
  */
-
 TEST_CASE("Utilities: CountConnectedComponents",
     "[Utilities][CountConnectedComponents]") {
 

@@ -102,11 +102,10 @@ void Assign(const std::shared_ptr<Node>& node, const std::shared_ptr<Node>& root
 
 }
 
-// Implementation of Kosaraju's algorithm derived from:
+// Uses implementation of Kosaraju's algorithm derived from:
 // https://en.wikipedia.org/wiki/Kosaraju's_algorithm
-bool ContainsNonTrivialStrongComponent(const NodeDeque& nodes,
-    const std::deque<Link>& links) {
-
+NodeDeque TopologicalSort(const NodeDeque& nodes,
+                          const std::deque<Link>& links) {
   // nodes are identified by index, as we don't trust node IDs
   auto visited = std::vector<bool>(nodes.size(), false);
   NodeDeque stack;
@@ -116,6 +115,18 @@ bool ContainsNonTrivialStrongComponent(const NodeDeque& nodes,
     // thus, the stack is ordered from input to output nodes
     Visit(node, visited, stack, nodes, links);
   }
+
+  return stack;
+}
+
+// Uses Kosaraju's algorithm with implementation derived from:
+// https://en.wikipedia.org/wiki/Kosaraju's_algorithm
+bool ContainsDirectedCycle(const NodeDeque& nodes,
+    const std::deque<Link>& links) {
+
+  // topologically sorted list (nodes that belong to the same
+  // strong component have arbitrary relative ordering)
+  NodeDeque stack = TopologicalSort(nodes, links);
 
   // each position with a non-zero value corresponds to a component
   // the value is the number of nodes in the component
@@ -127,7 +138,8 @@ bool ContainsNonTrivialStrongComponent(const NodeDeque& nodes,
     Assign(node, node, is_assigned, assignments, nodes, links);
   }
 
-  // check if there are components with multiple nodes
+  // check if there are strong components
+  // with multiple nodes (i.e. a directed cycle)
   for (auto assignment : assignments) {
     if (assignment != 1) {
       return true;

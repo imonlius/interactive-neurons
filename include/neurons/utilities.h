@@ -12,11 +12,16 @@ namespace neurons::utilities {
 bool NodesAndLinksConsistent(const NodeDeque& nodes,
     const std::deque<Link>& links);
 
+// Returns a NodeDeque with nodes sorted topologically, i.e.
+// for every pair of distinct nodes a and b, if a serves as the input for
+// b, then a will appear before b in the returned NodeDeque.
+// Nodes that belong to directed cycles will have arbitrary relative ordering.
+NodeDeque TopologicalSort(const NodeDeque& nodes,
+    const std::deque<Link>& links);
+
 // Returns whether the graph constructed by the passed links contains
-// a non-trivial (# nodes > 1) strong component, where a strong or
-// strongly connected component is a component in which there is
-// a path from every vertex to every other vertex, i.e. a loop.
-bool ContainsNonTrivialStrongComponent(const NodeDeque& nodes,
+// a directed cycle.
+bool ContainsDirectedCycle(const NodeDeque& nodes,
     const std::deque<Link>& links);
 
 // Returns the number of connected components in the graph.
