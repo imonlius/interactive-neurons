@@ -21,8 +21,16 @@ node/link adding and deleting. Fixed memory management of flashlight modules in 
 
 2020-04-29: Refactored Node as an abstract class with DataNode and ModuleNode subclasses.
 
+2020-04-30: Added MNIST data loading methods.
+
+2020-05-02: Added utility graph methods (ContainsDirectedGraph,
+CountConnectedComponents, AreNodeInputsSatisfied, NodesAndLinksConsistent,
+ContainsTopologicalCycle) for use when building flashlight model from network.
+
 TODO: 
-1. Add Dataloader class (with DataNode counterpart).
-2. Add graph algorithms for network checking. 
-3. Implement machine learning part.
-4. Add graph display of machine learning loss.
+1. Implement ML model. (Create a fl::Container subclass that
+takes nodes and links as inputs, validates them using utility graph methods,
+then builds model with utility graph methods).
+2. Implement trainer class. (Trains ML model with pre-set LR, batch size, number
+of epochs, optimizer, etc).
+2. Add graph display of machine learning loss.
