@@ -23,10 +23,10 @@ TEST_CASE("Utilities: NodesAndLinksConsistent",
     "[Utilities][NodesAndLinksConsistent]") {
 
   SECTION("Duplicate Node IDs") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     neurons::NodeDeque nodes = {node_one, node_two};
     std::deque<Link> links;
@@ -34,10 +34,10 @@ TEST_CASE("Utilities: NodesAndLinksConsistent",
   }
 
   SECTION("Duplicate Link IDs") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     neurons::NodeDeque nodes = {node_one, node_two};
     std::deque<Link> links;
@@ -47,10 +47,10 @@ TEST_CASE("Utilities: NodesAndLinksConsistent",
   }
 
   SECTION("Link and Node Same ID") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     neurons::NodeDeque nodes = {node_one, node_two};
     std::deque<Link> links;
@@ -60,10 +60,10 @@ TEST_CASE("Utilities: NodesAndLinksConsistent",
   }
 
   SECTION("Link with Foreign Node") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     neurons::NodeDeque nodes = {node_one};
     std::deque<Link> links;
@@ -72,10 +72,10 @@ TEST_CASE("Utilities: NodesAndLinksConsistent",
   }
 
   SECTION("Link with nullptr Node") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     neurons::NodeDeque nodes = {node_one, node_two};
     std::deque<Link> links;
@@ -84,10 +84,10 @@ TEST_CASE("Utilities: NodesAndLinksConsistent",
   }
 
   SECTION("Nullptr Node") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     neurons::NodeDeque nodes = {node_one, node_two, nullptr};
     std::deque<Link> links;
@@ -99,10 +99,10 @@ TEST_CASE("Utilities: NodesAndLinksConsistent",
   }
 
   SECTION("Populated network (valid)") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     neurons::NodeDeque nodes = {node_one, node_two};
     std::deque<Link> links;
@@ -120,10 +120,10 @@ TEST_CASE("Utilities: TopologicalSort",
     "[Utilities][TopologicalSort]") {
 
   SECTION("Nodes without links") {
-    const auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    const auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     const neurons::NodeDeque nodes = {node_one, node_two};
 
     const neurons::NodeDeque sorted =
@@ -135,14 +135,14 @@ TEST_CASE("Utilities: TopologicalSort",
   }
 
   SECTION("One prime dependency") {
-    const auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    const auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
-    const auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
-    const auto node_four =
-        std::make_shared<ModuleNode>(3, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_three = std::make_shared<ModuleNode>(2, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_four = std::make_shared<ModuleNode>(3, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     const neurons::NodeDeque nodes =
         {node_one, node_two, node_three, node_four};
 
@@ -161,14 +161,14 @@ TEST_CASE("Utilities: TopologicalSort",
   }
 
   SECTION("Two prime dependencies") {
-    const auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    const auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
-    const auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
-    const auto node_four =
-        std::make_shared<ModuleNode>(3, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_three = std::make_shared<ModuleNode>(2, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_four = std::make_shared<ModuleNode>(3, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     const neurons::NodeDeque nodes =
         {node_one, node_two, node_three, node_four};
 
@@ -209,10 +209,10 @@ TEST_CASE("Utilities: ContainsDirectedCycle",
   }
 
   SECTION("Contains a directed cycle") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     neurons::NodeDeque nodes = {node_one, node_two};
     std::deque<Link> links;
@@ -222,16 +222,16 @@ TEST_CASE("Utilities: ContainsDirectedCycle",
   }
 
   SECTION("Contains multiple directed cycles") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
-    auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
-    auto node_four =
-        std::make_shared<ModuleNode>(3, neurons::Conv2D, nullptr);
-    auto node_five =
-        std::make_shared<ModuleNode>(4, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_three = std::make_shared<ModuleNode>(2, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_four = std::make_shared<ModuleNode>(3, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_five = std::make_shared<ModuleNode>(4, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     neurons::NodeDeque nodes =
         {node_one, node_two, node_three, node_four, node_five};
@@ -244,12 +244,12 @@ TEST_CASE("Utilities: ContainsDirectedCycle",
   }
 
   SECTION("Contains only a weakly connected component") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
-    auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_three = std::make_shared<ModuleNode>(2, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     neurons::NodeDeque nodes = {node_one, node_two, node_three};
     std::deque<Link> links;
@@ -268,12 +268,12 @@ TEST_CASE("Utilities: CountConnectedComponents",
     "[Utilities][CountConnectedComponents]") {
 
   SECTION("One connected component") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
-    auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_three = std::make_shared<ModuleNode>(2, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     std::deque<Link> links;
     links.emplace_back(3, node_one, node_two);
@@ -283,12 +283,12 @@ TEST_CASE("Utilities: CountConnectedComponents",
   }
 
   SECTION("Multiple connected components") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
-    auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_three = std::make_shared<ModuleNode>(2, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     std::deque<Link> links;
     links.emplace_back(3, node_one, node_two);
@@ -298,12 +298,12 @@ TEST_CASE("Utilities: CountConnectedComponents",
 
 
   SECTION("All nodes are individual connected components") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
-    auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_three = std::make_shared<ModuleNode>(2, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     std::deque<Link> links;
     neurons::NodeDeque nodes = {node_one, node_two, node_three};
@@ -325,11 +325,14 @@ TEST_CASE("Utilities: AreNodeInputsSatisfied",
 
   SECTION("All module nodes have valid inputs") {
     auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(0, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(1, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(2, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     std::deque<Link> links;
     links.emplace_back(3, node_one, node_two);
@@ -342,11 +345,14 @@ TEST_CASE("Utilities: AreNodeInputsSatisfied",
 
   SECTION("All module nodes have valid inputs + one input-less data node") {
     auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(0, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(1, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(2, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_four =
         std::make_shared<DataNode>(3, nullptr, nullptr, nullptr);
 
@@ -361,11 +367,14 @@ TEST_CASE("Utilities: AreNodeInputsSatisfied",
 
   SECTION("Some module nodes try to satisfy their own inputs") {
     auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(0, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(1, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(2, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     std::deque<Link> links;
     links.emplace_back(4, node_two, node_three);
@@ -378,11 +387,14 @@ TEST_CASE("Utilities: AreNodeInputsSatisfied",
 
   SECTION("Some module nodes lack inputs") {
     auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(0, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(1, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(2, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     std::deque<Link> links;
     links.emplace_back(4, node_two, node_three);
@@ -406,11 +418,14 @@ TEST_CASE("Utilities: AreNodeOutputsSatisfied",
 
   SECTION("All module nodes have valid outputs") {
     auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(0, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(1, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+        std::make_shared<ModuleNode>(2, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     std::deque<Link> links;
     links.emplace_back(3, node_one, node_two);
@@ -422,14 +437,15 @@ TEST_CASE("Utilities: AreNodeOutputsSatisfied",
   }
 
   SECTION("All module nodes have valid outputs + one output-less loss node") {
-    auto node_one = std::make_shared<ModuleNode>(0,
-        neurons::Conv2D, nullptr);
-    auto node_two = std::make_shared<ModuleNode>(1,
-        neurons::Conv2D, nullptr);
-    auto node_three = std::make_shared<ModuleNode>(2,
-        neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_three = std::make_shared<ModuleNode>(2, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
     auto node_four = std::make_shared<ModuleNode>(3,
-        neurons::CategoricalCrossEntropy, nullptr);
+        neurons::CategoricalCrossEntropy,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1,1,1,1)));
 
     std::deque<Link> links;
     links.emplace_back(4, node_two, node_four);
@@ -441,12 +457,12 @@ TEST_CASE("Utilities: AreNodeOutputsSatisfied",
   }
 
   SECTION("Some module nodes try to satisfy their own outputs") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
-    auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_three = std::make_shared<ModuleNode>(2, neurons::Conv2D,
+            std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     std::deque<Link> links;
     links.emplace_back(4, node_two, node_three);
@@ -458,12 +474,12 @@ TEST_CASE("Utilities: AreNodeOutputsSatisfied",
   }
 
   SECTION("Some module nodes lack outputs") {
-    auto node_one =
-        std::make_shared<ModuleNode>(0, neurons::Conv2D, nullptr);
-    auto node_two =
-        std::make_shared<ModuleNode>(1, neurons::Conv2D, nullptr);
-    auto node_three =
-        std::make_shared<ModuleNode>(2, neurons::Conv2D, nullptr);
+    auto node_one = std::make_shared<ModuleNode>(0, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_two = std::make_shared<ModuleNode>(1, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
+    auto node_three = std::make_shared<ModuleNode>(2, neurons::Conv2D,
+        std::make_unique<fl::Conv2D>(fl::Conv2D(1, 1, 1, 1)));
 
     std::deque<Link> links;
     links.emplace_back(4, node_two, node_three);

@@ -55,12 +55,9 @@ std::string NodeTypeToString(NodeType type) {
 }
 
 ModuleNode::ModuleNode(size_t id, NodeType type,
-    std::unique_ptr<fl::Module> module) : Node(id, type){
+    std::unique_ptr<fl::Module> module) :
+    Node(id, type), Module(module->params()){
   module_ = std::move(module);
-}
-
-std::vector<fl::Variable> ModuleNode::params() const {
-  return this->module_->params();
 }
 
 void ModuleNode::train() {
@@ -71,16 +68,8 @@ void ModuleNode::eval() {
   this->module_->eval();
 }
 
-fl::Variable ModuleNode::param(int position) const {
-  return this->module_->param(position);
-}
-
 void ModuleNode::setParams(const fl::Variable& var, int position) {
   this->module_->setParams(var, position);
-}
-
-void ModuleNode::zeroGrad() {
-  this->module_->zeroGrad();
 }
 
 std::vector<fl::Variable> ModuleNode::forward(

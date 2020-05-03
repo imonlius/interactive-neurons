@@ -8,7 +8,7 @@
 
 namespace neurons {
 
-class ModuleNode : public Node {
+ class ModuleNode : public Node, public fl::Module {
 
  public:
 
@@ -16,13 +16,11 @@ class ModuleNode : public Node {
   ModuleNode(size_t id, NodeType type, std::unique_ptr<fl::Module> module);
 
   // Wrapper methods that will be called on the wrapped fl::Module.
-  [[nodiscard]] std::vector<fl::Variable> params() const;
-  void train();
-  void eval();
-  [[nodiscard]] fl::Variable param(int position) const;
-  void setParams(const fl::Variable& var, int position);
-  void zeroGrad();
-  std::vector<fl::Variable> forward(const std::vector<fl::Variable>& inputs);
+  void train() override;
+  void eval() override;
+  void setParams(const fl::Variable& var, int position) override;
+  std::vector<fl::Variable> forward(
+      const std::vector<fl::Variable>& inputs) override;
   [[nodiscard]] std::string prettyString() const override;
 
  private:
