@@ -20,7 +20,7 @@ NodeDeque TopologicalSort(const NodeDeque& nodes,
     const std::deque<Link>& links);
 
 // Returns whether the graph constructed by the passed links contains
-// a directed cycle.
+// a directed cycle. Note: a directed cycle, as used here, must have > 1 nodes.
 bool ContainsDirectedCycle(const NodeDeque& nodes,
     const std::deque<Link>& links);
 

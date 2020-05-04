@@ -27,10 +27,10 @@ node/link adding and deleting. Fixed memory management of flashlight modules in 
 CountConnectedComponents, AreNodeInputsSatisfied, NodesAndLinksConsistent,
 ContainsTopologicalCycle) for use when building flashlight model from network.
 
+2020-05-03: Implemented neurons::NetworkContainer class, which is an fl::Container
+generated from a neurons::Network.
+
 TODO: 
-1. Implement ML model. (Create a fl::Container subclass that
-takes nodes and links as inputs, validates them using utility graph methods,
-then builds model with utility graph methods).
-2. Implement trainer class. (Trains ML model with pre-set LR, batch size, number
+1. Implement trainer class. (Trains ML model with pre-set LR, batch size, number
 of epochs, optimizer, etc).
 2. Add graph display of machine learning loss.
