@@ -1,7 +1,9 @@
 #include "mnist-utilities.h"
 
-// MNIST Data loading functions below.
-// All functions from MNIST flashlight example:
+#include <iomanip>
+
+// MNIST-specific dataloading and training functions below.
+// All methods from this file are derived from MNIST flashlight example:
 // https://github.com/facebookresearch/flashlight/blob/master/examples/Mnist.cpp
 
 namespace neurons::mnist_utilities {
@@ -64,6 +66,106 @@ std::pair<af::array, af::array> load_dataset(
   af::array labels = load_data<int>(label_file, {size});
 
   return std::make_pair(ims, labels);
+}
+
+std::pair<double, double> eval_loop(neurons::NetworkContainer& model,
+    fl::Dataset& dataset) {
+
+  fl::AverageValueMeter loss_meter;
+  fl::FrameErrorMeter error_meter;
+
+  // place model into evaluation mode
+  model.eval();
+
+  for (auto& example: dataset) {
+    // for MNIST dataset
+    auto inputs = fl::noGrad(example.at(mnist_utilities::kInputIdx));
+    auto target = fl::noGrad(example.at(mnist_utilities::kTargetIdx));
+
+    auto output = model(inputs);
+
+    // retrieve the prediction from the output (maximum values)
+    af::array max_vals, max_ids;
+    af::max(max_vals, max_ids, output.array(), 0);
+
+    // record prediction error
+    error_meter.add(af::reorder(max_ids, 1, 0), target.array());
+
+    // record loss
+    loss_meter.add(
+        fl::categoricalCrossEntropy(output, target).array().scalar<float>());
+  }
+
+  // back to training mode
+  model.train();
+
+  double error = error_meter.value();
+  double loss = loss_meter.value().at(0);
+
+  return std::make_pair(loss, error);
+}
+
+void train_model_inner(neurons::NetworkContainer& model, neurons::DataNode& data,
+                       fl::FirstOrderOptimizer& optimizer,
+                       int epochs, std::ostream& output, bool& training) {
+
+  for (int epoch = 0; epoch < epochs; ++epoch) {
+
+    fl::AverageValueMeter train_loss_meter;
+
+    for (auto& example : *(data.train_dataset_)) {
+      auto inputs = fl::noGrad(example.at(mnist_utilities::kInputIdx));
+      auto targets = fl::noGrad(example.at(mnist_utilities::kTargetIdx));
+
+      auto outputs = model(inputs);
+
+      // compute loss
+      auto loss = fl::categoricalCrossEntropy(outputs, targets);
+      train_loss_meter.add(loss.array().scalar<float>());
+
+      // backprop, update weights, then zero gradients
+      loss.backward();
+      optimizer.step();
+      optimizer.zeroGrad();
+    }
+
+    double train_loss = train_loss_meter.value().at(0);
+
+    // evaluate on validation set
+    double val_loss, val_error;
+    std::tie(val_loss, val_error) = eval_loop(model, *data.valid_dataset_);
+
+    output << "Epoch " << epoch << std::setprecision(3)
+           << ": Avg Train Loss: " << train_loss
+           << " Validation Loss: " << val_loss
+           << " Validation Error (%): " << val_error << std::endl;
+  }
+
+  // report test loss and error
+  double test_loss, test_error;
+  std::tie(test_loss, test_error) = eval_loop(model, *data.test_dataset_);
+  output << "Test Loss: " << test_loss
+         << " Test Error (%): " << test_error << std::endl;
+}
+
+
+// Wraps train_model_inner() call with a try-catch block to return any
+// exceptions.
+void train_model(neurons::NetworkContainer& model, neurons::DataNode& data,
+                 fl::FirstOrderOptimizer& optimizer,
+                 int epochs, std::ostream& output, bool& training,
+                 std::exception_ptr& exception_ptr) {
+  training = true;
+
+  try {
+    train_model_inner(model, data, optimizer, epochs, output, training);
+  } catch (std::exception& exception) {
+    exception_ptr = std::current_exception();
+  }
+
+  // keep the training lock out of the try/catch so execution is guaranteed.
+  training = false;
+
 }
 
 }  // namespace neurons::mnist_utilities

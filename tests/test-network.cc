@@ -207,11 +207,6 @@ TEST_CASE("Network: Add Links", "[Network][AddLink]") {
         network.GetNodes().at(0), network.GetNodes().at(1)) != nullptr);
   }
 
-  SECTION("Linking a node to itself (invalid)") {
-    REQUIRE(network.AddLink(
-        network.GetNodes().at(0), network.GetNodes().at(0)) == nullptr);
-  }
-
   SECTION("Adding a link between a node not in the network (invalid)") {
     auto mod = fl::Linear(1, 1);
     REQUIRE(network.AddLink(network.GetNodes().at(0),

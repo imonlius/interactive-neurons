@@ -17,6 +17,16 @@ class NetworkContainer : private fl::Container {
 
  public:
 
+  // Allow access to all methods from fl::Container except fl::Container::add
+  using fl::Container::eval;
+  using fl::Container::module;
+  using fl::Container::modules;
+  using fl::Container::param;
+  using fl::Container::params;
+  using fl::Container::setParams;
+  using fl::Container::train;
+  using fl::Container::zeroGrad;
+
   // Public constructor.
   // Checks if passed nodes and links constitute a valid model.
   // Graphs must have no directed cycles, only consist of one component,
@@ -42,7 +52,7 @@ class NetworkContainer : private fl::Container {
   size_t loss_node_id_;
 
   // Links connecting the modules
-  const std::deque<Link>& links_;
+  const std::deque<Link> links_;
 
 };
 

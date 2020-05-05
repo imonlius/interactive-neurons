@@ -32,10 +32,10 @@ TEST_CASE("LinkAdapter: Constructor", "[LinkAdapter][Constructor]") {
 
   REQUIRE(link_adapter.id_ ==
           link_id * neurons::adapter::kIdMultiplier);
-  REQUIRE(link_adapter.input_id_ ==
-          input_id * neurons::adapter::kIdMultiplier + 1);
-  REQUIRE(link_adapter.output_id_ ==
-          output_id * neurons::adapter::kIdMultiplier + 2);
+  REQUIRE(link_adapter.start_id_ ==
+          input_id * neurons::adapter::kIdMultiplier + 2);
+  REQUIRE(link_adapter.end_id_ ==
+          output_id * neurons::adapter::kIdMultiplier + 1);
 }
 
 /*
@@ -76,19 +76,19 @@ TEST_CASE("LinkAdapter: BuildLinkAdapters",
 
     REQUIRE(link_adapters.at(0).id_ ==
             link_id * neurons::adapter::kIdMultiplier);
-    REQUIRE(link_adapters.at(0).input_id_ ==
-            input_id * neurons::adapter::kIdMultiplier + 1);
-    REQUIRE(link_adapters.at(0).output_id_ ==
-            output_id * neurons::adapter::kIdMultiplier + 2);
+    REQUIRE(link_adapters.at(0).start_id_ ==
+            input_id * neurons::adapter::kIdMultiplier + 2);
+    REQUIRE(link_adapters.at(0).end_id_ ==
+            output_id * neurons::adapter::kIdMultiplier + 1);
 
     REQUIRE(link_adapters.at(1).link_ == &links.at(1));
 
     REQUIRE(link_adapters.at(1).id_ ==
             reverse_link_id * neurons::adapter::kIdMultiplier);
-    REQUIRE(link_adapters.at(1).input_id_ ==
-            output_id * neurons::adapter::kIdMultiplier + 1);
-    REQUIRE(link_adapters.at(1).output_id_ ==
-            input_id * neurons::adapter::kIdMultiplier + 2);
+    REQUIRE(link_adapters.at(1).start_id_ ==
+            output_id * neurons::adapter::kIdMultiplier + 2);
+    REQUIRE(link_adapters.at(1).end_id_ ==
+            input_id * neurons::adapter::kIdMultiplier + 1);
   }
 }
 

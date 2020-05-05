@@ -11,8 +11,8 @@ LinkAdapter::LinkAdapter(Link& link) {
 
   id_ = kIdMultiplier * link.GetId();
   // will throw exception if output_ or input_ is nullptr
-  output_id_ = kIdMultiplier * link.output_->GetId() + 2;
-  input_id_ = kIdMultiplier * link.input_->GetId() + 1;
+  end_id_ = kIdMultiplier * link.output_->GetId() + 1;
+  start_id_ = kIdMultiplier * link.input_->GetId() + 2;
 }
 
 std::vector<LinkAdapter> BuildLinkAdapters(std::deque<Link>& links) {

@@ -4,6 +4,7 @@
 #define FINALPROJECT_APPS_INTERACTIVE_NEURONS_H_
 
 #include <cinder/app/App.h>
+#include <future>
 #include <imgui_adapter/link-adapter.h>
 #include <imgui_adapter/node-adapter.h>
 #include <neurons/network.h>
@@ -20,7 +21,16 @@ class InteractiveNeurons : public cinder::app::App {
 
  private:
   Network network_;
+  // Whether node editor should be frozen
   bool freeze_editor_;
+  // Whether model training is in progress
+  bool training_;
+  // Training future
+  std::future<void> train_result_;
+  // Training log
+  std::stringstream log_;
+  // Training exception pointer
+  std::exception_ptr exception_ptr;
   const std::string kDataDirectory = getAssetPath("mnist");
 };
 

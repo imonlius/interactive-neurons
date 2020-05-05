@@ -34,7 +34,7 @@ class Network {
 
   // Add a Link to the network if the input and output form a valid Link.
   // Returns a pointer to the Link if successful. Otherwise, returns nullptr.
-  Link* AddLink(std::shared_ptr<Node> input, std::shared_ptr<Node> output);
+  Link* AddLink(const std::shared_ptr<Node>& input, const std::shared_ptr<Node>& output);
 
   // Delete a Link from the network.
   void DeleteLink(const Link& link);
@@ -44,7 +44,7 @@ class Network {
 
   // Returns pointer to the data node of the network. If network does not have
   // a data node set, returns nullptr.
-  [[nodiscard]] std::shared_ptr<Node> GetDataNode() const;
+  [[nodiscard]] std::shared_ptr<DataNode> GetDataNode() const;
 
   // Returns pointer to the loss node of the network. If network does not have
   // a loss node set, returns nullptr.

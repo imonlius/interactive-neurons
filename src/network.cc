@@ -6,7 +6,7 @@ namespace neurons {
 
 // Helper function, returns whether the deque contains the Node
 bool ContainsNode(const NodeDeque& nodes,
-                  const std::shared_ptr<Node> node) {
+                  const std::shared_ptr<Node>& node) {
   for (const auto& it : nodes) {
     if(it == node) {
       return true;
@@ -15,15 +15,14 @@ bool ContainsNode(const NodeDeque& nodes,
   return false;
 }
 
-Link* Network::AddLink(std::shared_ptr<Node> input,
-    std::shared_ptr<Node> output) {
+Link* Network::AddLink(const std::shared_ptr<Node>& input,
+    const std::shared_ptr<Node>& output) {
 
   // if Network does not have the Nodes, it cannot link them.
   if (!ContainsNode(nodes_, input) || !ContainsNode(nodes_, output)) {
     return nullptr;
   }
 
-  // TODO: Implement link checking to verify if link is allowed
   links_.emplace_back(unique_id_++, input, output);
   return &links_.back();
 }
@@ -93,11 +92,11 @@ NodeDeque& Network::GetNodes() {
   return nodes_;
 }
 
-std::shared_ptr<Node> Network::GetDataNode() const {
+std::shared_ptr<DataNode> Network::GetDataNode() const {
   for (const auto& node : nodes_) {
     NodeType type = node->GetNodeType();
     if (type == Dataset) {
-      return node;
+      return std::dynamic_pointer_cast<DataNode>(node);
     }
   }
   return nullptr;

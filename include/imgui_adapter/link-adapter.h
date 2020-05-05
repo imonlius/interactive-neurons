@@ -14,8 +14,8 @@ namespace neurons::adapter {
 // Graph link relies on pins
 struct LinkAdapter {
   size_t id_;
-  size_t input_id_;
-  size_t output_id_;
+  size_t start_id_;
+  size_t end_id_;
 
   Link* link_;
 
