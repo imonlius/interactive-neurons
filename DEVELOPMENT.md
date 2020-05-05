@@ -32,5 +32,7 @@ generated from a neurons::Network.
 
 2020-05-05: Implemented model training and ImGui log display.
 
-TODO: 
-1. Investigate training statistics. Issue: loss is reporting negative values.
+Stretch Goals:
+- [ ] Make logging more verbose (include model printout and train statistics 
+such as time per epoch) 
+- [ ] Add graphing of loss/error over time
