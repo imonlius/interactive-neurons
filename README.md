@@ -6,7 +6,7 @@
 **Author**: Simon Liu - [`simonl2@illinois.edu`](mailto:simonl2@illinois.edu)
 
 interactive-neurons is an interactive GUI that allows you to design and train 
-simple convolutional neural networks. Through the GUI, you can tweak the 
+simple convolutional neural networks using the MNIST dataset. Through the GUI, you can tweak the 
 network architecture, including features such as layers, connections, 
 and activation functions. You can also customize training parameters such as 
 the learning rate, training time, and optimizers. 
