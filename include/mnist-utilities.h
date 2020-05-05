@@ -34,6 +34,7 @@ std::pair<double, double> eval_loop(neurons::NetworkContainer& model,
 // for the passed number of epochs. Uses categorical cross entropy loss and
 // writes model training log to output. Sets training to whether training
 // is still in progress (allows for checking in multi-threaded programs).
+// If training becomes false during run, it will stop the process.
 // Writes any exceptions that happens to exception_ptr.
 void train_model(neurons::NetworkContainer& model, neurons::DataNode& data,
     fl::FirstOrderOptimizer& optimizer, int epochs, std::ostream& output,

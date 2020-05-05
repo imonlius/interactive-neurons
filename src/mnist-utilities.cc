@@ -114,6 +114,11 @@ void train_model_inner(neurons::NetworkContainer& model, neurons::DataNode& data
     fl::AverageValueMeter train_loss_meter;
 
     for (auto& example : *(data.train_dataset_)) {
+      // if training has been halted, immediate return.
+      if (!training) {
+        return;
+      }
+
       auto inputs = fl::noGrad(example.at(mnist_utilities::kInputIdx));
       auto targets = fl::noGrad(example.at(mnist_utilities::kTargetIdx));
 
@@ -155,7 +160,9 @@ void train_model(neurons::NetworkContainer& model, neurons::DataNode& data,
                  fl::FirstOrderOptimizer& optimizer,
                  int epochs, std::ostream& output, bool& training,
                  std::exception_ptr& exception_ptr) {
+
   training = true;
+  output << model.prettyString(); // print network before training
 
   try {
     train_model_inner(model, data, optimizer, epochs, output, training);

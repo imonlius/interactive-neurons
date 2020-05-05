@@ -204,7 +204,8 @@ void HandleNodeCreation(Network& network, bool& freeze_editor) {
   }
 
   if (spawn_node != Dummy) {
-    node_created = spawner::SpawnModuleNode(network, spawn_node, freeze_editor);
+    node_created = spawner::SpawnModuleNode(
+            network, spawn_node, freeze_editor);
   }
 
   // if Node Creator has relinquished control, reset the spawn node
@@ -393,6 +394,21 @@ bool GetTrainConfiguration(std::shared_ptr<NetworkContainer>& container,
   return configured;
 }
 
+void DrawLog(const std::stringstream& log) {
+  ImGui::Begin("Training Log");
+  ImGui::BeginChild("Scrolling");
+  // make a copy of log_ so we can read the log without erasing it
+  std::stringstream log_copy;
+  log_copy << log.str();
+
+  std::string line;
+  while (std::getline(log_copy, line)) {
+    ImGui::Text("%s", line.c_str());
+  }
+  ImGui::EndChild();
+  ImGui::End();
+}
+
 void InteractiveNeurons::draw() {
   cinder::gl::clear(cinder:: Color( 0, 0, 0 ) );
 
@@ -427,6 +443,9 @@ void InteractiveNeurons::draw() {
           exception_ptr = std::current_exception();
         }
       }
+      if (training_ && !freeze_editor_ && ImGui::MenuItem("Stop Training")) {
+          training_ = false;
+      }
       ImGui::EndMenu();
     }
     ImGui::EndMenuBar();
@@ -436,16 +455,15 @@ void InteractiveNeurons::draw() {
     int epochs;
     std::shared_ptr<fl::FirstOrderOptimizer> optim;
     if (GetTrainConfiguration(container, freeze_editor_, optim, epochs)) {
-      // train_model has a void return type, but we store value so that
+      // use multi-threading to allow Cinder to run while training
+      // train_model has a void return type, but store value so that
       // it operates as an asynchronous thread otherwise it will block main
-      // thread
       train_result_ =
           std::async(std::launch::async, mnist_utilities::train_model,
               std::ref(*container), std::ref(*network_.GetDataNode()),
               std::ref(*optim), epochs, std::ref(log_),
               std::ref(training_), std::ref(exception_ptr));
     }
-    // use multi-threading to allow Cinder to run while training
   }
 
   if (!freeze_editor_ && !training_) {
@@ -475,19 +493,7 @@ void InteractiveNeurons::draw() {
     container = nullptr;
   }
 
-  ImGui::Begin("Training Log");
-  ImGui::BeginChild("Scrolling");
-  // make a copy of log_ so we can read the log without erasing it
-  std::stringstream log_copy;
-  log_copy << log_.str();
-
-  std::string line;
-  while (std::getline(log_copy, line)) {
-    ImGui::Text("%s", line.c_str());
-  }
-  ImGui::EndChild();
-  ImGui::End();
-
+  DrawLog(log_);
 }
 
 void InteractiveNeurons::quit() {
