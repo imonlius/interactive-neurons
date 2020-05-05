@@ -247,10 +247,10 @@ bool GetTrainConfiguration(std::shared_ptr<NetworkContainer>& container,
     // derived from github.com/ocornut/imgui/issues/1658
     ImGui::Text("Optimizer:");
     if (ImGui::BeginCombo("##Optimizer", optimizer_str.data())) {
-      for (const auto & optim : optim_options) {
-        bool is_selected = (optimizer_str == optim);
-        if (ImGui::Selectable(optim.c_str(), is_selected)) {
-          optimizer_str = optim;
+      for (const auto & option : optim_options) {
+        bool is_selected = (optimizer_str == option);
+        if (ImGui::Selectable(option.c_str(), is_selected)) {
+          optimizer_str = option;
         }
         if (is_selected) {
           // sets the initial focus of the list when opened
