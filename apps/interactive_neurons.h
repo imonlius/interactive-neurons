@@ -1,4 +1,4 @@
-// Copyright (c) 2020 CS126SP20. All rights reserved.
+// Copyright (c) 2020 Simon Liu. All rights reserved.
 
 #ifndef FINALPROJECT_APPS_INTERACTIVE_NEURONS_H_
 #define FINALPROJECT_APPS_INTERACTIVE_NEURONS_H_

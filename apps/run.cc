@@ -1,4 +1,4 @@
-// Copyright (c) 2020 [Your Name]. All rights reserved.
+// Copyright (c) 2020 Simon Liu. All rights reserved.
 
 #include <cinder/app/App.h>
 #include <cinder/app/RendererGl.h>

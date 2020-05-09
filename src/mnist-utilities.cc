@@ -109,6 +109,13 @@ void train_model_inner(neurons::NetworkContainer& model, neurons::DataNode& data
                        fl::FirstOrderOptimizer& optimizer,
                        int epochs, std::ostream& output, bool& training) {
 
+  output << "MNIST dataset: loaded "
+         << data.train_dataset_->size() << " train batches" << std::endl
+         << "MNIST dataset: loaded "
+         << data.valid_dataset_->size() << " validation batches" << std::endl
+         << "MNIST dataset: loaded "
+         << data.test_dataset_->size() << " test batches" << std::endl;
+
   for (int epoch = 0; epoch < epochs; ++epoch) {
 
     fl::AverageValueMeter train_loss_meter;
@@ -116,6 +123,7 @@ void train_model_inner(neurons::NetworkContainer& model, neurons::DataNode& data
     for (auto& example : *(data.train_dataset_)) {
       // if training has been halted, immediate return.
       if (!training) {
+        output << "Training cancelled. " << std::endl;
         return;
       }
 
